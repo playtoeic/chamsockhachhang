@@ -92,6 +92,31 @@ Mỗi kịch bản tương ứng một user story trong [spec.md](./spec.md).
 2. Bằng tài khoản nhân viên, tìm theo từ khoá và sao chép câu trả lời. **Kỳ vọng**: tìm thấy, sao
    chép được, không có nút sửa/xoá.
 
+## Đo hiệu năng (SC-001, SC-009)
+
+`npm run perf` tạo cơ sở dữ liệu riêng `inbox_perf`, sinh dữ liệu giả lập (`scripts/seed.ts`), rồi
+đo thời gian phản hồi của API mỗi mục và độ trễ xử lý 200 webhook gửi dồn. Lệnh trả mã lỗi nếu mục
+nào quá 2 giây hoặc p95 quá 1 phút.
+
+Kết quả ngày 2026-11-19 (máy phát triển Windows, PostgreSQL nhúng, 10 người dùng, 2000 cuộc trò
+chuyện, 10 000 tin, 2000 hồ sơ học sinh — mỗi cuộc trò chuyện có một hồ sơ tự tạo):
+
+| Mục | Trung vị (ms) | Chậm nhất trong 5 lần (ms) |
+|-----|---------------|-----------------------------|
+| Tin nhắn: danh sách | 29 | 116 |
+| Tin nhắn: lọc chưa đọc | 25 | 28 |
+| Lịch học thử | 62 | 239 |
+| Lịch xếp học | 78 | 112 |
+| Các bước: danh sách học sinh | 62 | 71 |
+| Các bước: Q&A | 7 | 14 |
+
+SC-001: 200 webhook đồng thời xử lý xong trong 1,2 giây; p95 1,19 giây (ngưỡng 1 phút). Không cần
+thêm index.
+
+Số đo là thời gian phản hồi API phía máy chủ; trình duyệt cần thêm thời gian vẽ trang. Số hồ sơ học
+sinh tăng theo số khách mới (khoảng 200 mỗi ngày); các danh sách chưa xếp chỉ trả 200 người có hoạt
+động gần nhất và có ô tìm theo tên.
+
 ## Kiểm chứng với nền tảng thật
 
 Sau khi đã xác minh quyền truy cập theo [research.md](./research.md) mục R1, lặp lại kịch bản 1 cho

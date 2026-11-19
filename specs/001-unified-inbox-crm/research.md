@@ -28,6 +28,12 @@ của nền tảng, nên mỗi kênh có một bước "xác minh trước khi l
   Messenger/Instagram. Cần đối chiếu quyền cần thiết với tài liệu chính thức.
 - **Xác minh trước khi làm**: đọc tài liệu chính thức của Meta để chốt tên quyền theo luồng đăng
   nhập sẽ dùng và yêu cầu App Review hiện hành. Thời gian duyệt không do dự án kiểm soát.
+- **Trạng thái kiểm chứng khi cài đặt (2026-11-19)**: bảng mã lỗi chính thức của Meta xác nhận mã
+  10/2018278 là "ngoài thời hạn cho phép"; Send API xác nhận HUMAN_AGENT cho phép 7 ngày và cần được
+  duyệt trước (lỗi 100/2018276 nếu chưa duyệt). Adapter dùng Graph API `v23.0` (đổi bằng
+  `META_GRAPH_VERSION`), kết nối Trang đầu tiên chủ quản lý (Instagram: Trang đầu tiên có tài khoản
+  Instagram chuyên nghiệp). Định dạng webhook trong dữ liệu mẫu theo Messenger Platform; kiểm chứng
+  với webhook thật ở T092.
 - **Alternatives considered**: dùng một dịch vụ hộp thư trung gian (trả phí theo tháng, làm nhanh
   hơn nhưng phụ thuộc bên thứ ba và mất quyền kiểm soát dữ liệu) — không chọn cho bản đầu.
 
@@ -44,6 +50,13 @@ của nền tảng, nên mỗi kênh có một bước "xác minh trước khi l
 - **Xác minh trước khi làm**: đọc developers.zalo.me để chốt thời hạn trả lời, hạn mức, tên sự kiện
   webhook (kể cả sự kiện OA gửi tin để ghi câu trả lời gửi từ ứng dụng gốc), API lấy tên và ảnh
   đại diện người dùng, và gói OA cần có để dùng API.
+- **Trạng thái kiểm chứng khi cài đặt (2026-11-19)**: trang developers.zalo.me dựng bằng JavaScript,
+  không đọc được bằng công cụ tra cứu. Adapter (`src/server/channels/zalo.ts`) dùng: chữ ký header
+  `X-ZEvent-Signature: mac=sha256(appId + thân + timestamp + OA secret key)`; sự kiện `user_send_*`
+  (khách gửi) và `oa_send_*` (echo); gửi qua `POST /v3.0/oa/message/cs`; thời hạn trả lời mặc định
+  **48 giờ** (nguồn bên thứ ba), đổi được bằng `ZALO_REPLY_WINDOW_HOURS`; mã lỗi -216/-124 → mất
+  kết nối, -32/-224 → vượt hạn mức, -213/-201 → quá thời hạn. **Tất cả cần đối chiếu lại với tài
+  liệu chính thức và một webhook thật khi OA được duyệt** (tasks.md T092).
 - **Phụ thuộc**: Zalo OA của trung tâm đang chờ phê duyệt (2026-11-16). Làm Zalo sau Facebook và
   Instagram; phát triển và test bằng dữ liệu mẫu, kiểm chứng với nền tảng thật khi OA được duyệt.
 

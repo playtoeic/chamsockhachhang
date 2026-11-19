@@ -1,0 +1,8 @@
+{
+  "app_id": "zalo-app-1",
+  "event_name": "oa_send_text",
+  "timestamp": "1763262100000",
+  "sender": { "id": "oa-555" },
+  "recipient": { "id": "zalo-user-44" },
+  "message": { "msg_id": "zmsg_echo_1", "text": "Trả lời trong ứng dụng" }
+}

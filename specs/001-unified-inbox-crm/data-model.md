@@ -69,6 +69,7 @@ Mọi thời điểm lưu ở UTC; ngày và khung giờ của lịch được h
 | assigneeUserId | → User | có thể trống; tối đa một người (FR-006a) |
 | unread | boolean | `true` khi có tin đến chưa ai mở |
 | lastMessageAt | thời điểm | dùng để sắp xếp (FR-005) |
+| lastInboundAt | thời điểm | có thể trống; thời điểm tin cuối của khách, truyền cho `sendText` để chọn thẻ `HUMAN_AGENT` (FR-007a) |
 | replyWindowExpiresAt | thời điểm | có thể trống; do adapter tính |
 
 ### Message

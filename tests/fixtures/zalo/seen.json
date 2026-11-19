@@ -1,0 +1,8 @@
+{
+  "app_id": "zalo-app-1",
+  "event_name": "user_seen_message",
+  "timestamp": "1763262000000",
+  "sender": { "id": "zalo-user-44" },
+  "recipient": { "id": "oa-555" },
+  "message": { "msg_ids": ["zmsg_out_1"] }
+}

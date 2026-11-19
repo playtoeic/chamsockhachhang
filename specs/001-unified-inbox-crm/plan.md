@@ -111,22 +111,27 @@ src/
 │   │   ├── class-schedule/   # (2) Lịch: xếp lịch học
 │   │   ├── trial-schedule/   # (3) Lịch: học thử
 │   │   ├── steps/            # (4) Các bước + Q&A
-│   │   └── settings/         # Nhân viên, Kênh (chỉ chủ)
-│   ├── dev/simulator/        # Chỉ khi ENABLE_SIMULATOR=true
+│   │   ├── settings/         # Nhân viên, Kênh (chỉ chủ)
+│   │   └── dev/simulator/    # Chỉ khi ENABLE_SIMULATOR=true
 │   └── api/                  # Theo contracts/api.md
 │       ├── webhooks/[platform]/
+│       ├── media/[name]/     # Ảnh đã lưu, chỉ người đã đăng nhập
 │       └── events/
 ├── components/               # Ô tên, lưới lịch, bảng chú thích màu, thanh tiến độ
 ├── server/
 │   ├── auth/                 # Phiên, kiểm tra quyền chủ/nhân viên
 │   ├── channels/             # Adapter: facebook, instagram, zalo, simulator
 │   ├── inbox/                # Nhận tin, gửi tin, gửi lại, người phụ trách
-│   ├── students/             # Hồ sơ, trạng thái, 5 bước
-│   ├── schedule/             # Học thử, xếp học, tác vụ tự chuyển trạng thái
+│   ├── students/             # Hồ sơ, tự tạo hồ sơ cho khách mới, trạng thái, 5 bước
+│   ├── schedule/             # Học thử, xếp học, tác vụ tự chuyển trạng thái, bộ chạy mỗi phút
 │   ├── qa/
 │   ├── events/               # Bộ phát sự kiện + SSE
 │   └── db.ts
-└── lib/                      # Khung giờ, tuần, múi giờ, đồng hồ tiêm vào
+├── lib/                      # Khung giờ, tuần, múi giờ, đồng hồ tiêm vào
+└── instrumentation.ts        # Khởi động tác vụ mỗi phút khi máy chủ chạy
+
+scripts/                      # PostgreSQL nhúng, máy chủ e2e, sinh dữ liệu, đo hiệu năng
+.github/                      # CI và mẫu pull request (cổng review)
 
 tests/
 ├── unit/                     # Quy tắc thuần: khung giờ, chuyển trạng thái, tiến độ

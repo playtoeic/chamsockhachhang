@@ -1,0 +1,17 @@
+{
+  "object": "page",
+  "entry": [
+    {
+      "id": "1111111111",
+      "time": 1763262000000,
+      "messaging": [
+        {
+          "sender": { "id": "2222222222" },
+          "recipient": { "id": "1111111111" },
+          "timestamp": 1763262000000,
+          "message": { "mid": "m_text_1", "text": "Cho em hỏi lịch học" }
+        }
+      ]
+    }
+  ]
+}

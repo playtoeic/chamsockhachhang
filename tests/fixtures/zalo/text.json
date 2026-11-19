@@ -1,0 +1,9 @@
+{
+  "app_id": "zalo-app-1",
+  "user_id_by_app": "app-user-1",
+  "event_name": "user_send_text",
+  "timestamp": "1763262000000",
+  "sender": { "id": "zalo-user-44" },
+  "recipient": { "id": "oa-555" },
+  "message": { "msg_id": "zmsg_text_1", "text": "Cho em hỏi lịch học" }
+}
