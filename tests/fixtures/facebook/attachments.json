@@ -1,0 +1,29 @@
+{
+  "object": "page",
+  "entry": [
+    {
+      "id": "1111111111",
+      "time": 1763262000000,
+      "messaging": [
+        {
+          "sender": { "id": "2222222222" },
+          "recipient": { "id": "1111111111" },
+          "timestamp": 1763262000000,
+          "message": {
+            "mid": "m_img_1",
+            "attachments": [{ "type": "image", "payload": { "url": "https://cdn.example.test/img1.jpg" } }]
+          }
+        },
+        {
+          "sender": { "id": "2222222222" },
+          "recipient": { "id": "1111111111" },
+          "timestamp": 1763262001000,
+          "message": {
+            "mid": "m_vid_1",
+            "attachments": [{ "type": "video", "payload": { "url": "https://cdn.example.test/v.mp4" } }]
+          }
+        }
+      ]
+    }
+  ]
+}

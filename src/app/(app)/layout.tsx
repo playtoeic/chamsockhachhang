@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ChannelAlert } from "@/components/ChannelAlert";
 import { Nav } from "@/components/Nav";
 import { UserProvider } from "@/components/UserContext";
 import { signOut } from "@/server/auth/config";
@@ -19,6 +20,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <UserProvider user={user}>
       <div className="app">
         <Nav logout={logout} />
+        <ChannelAlert />
         <main className="main">{children}</main>
       </div>
     </UserProvider>
