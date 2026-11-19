@@ -16,7 +16,9 @@
     "db:local": "tsx scripts/local-db.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "db:seed": "tsx scripts/seed.ts",
+    "perf": "tsx scripts/perf.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "2.11.3",

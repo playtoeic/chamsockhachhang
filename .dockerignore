@@ -1,0 +1,15 @@
+node_modules
+.next
+.next-e2e
+.git
+.pgdata
+.pgdata-test
+uploads
+coverage
+test-results
+playwright-report
+*.log*
+.env*
+!.env.example
+Dockerfile*
+.dockerignore

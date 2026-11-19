@@ -24,7 +24,10 @@ async function ensureStudent(id: string) {
 export async function addSlot(studentId: string, weekday: number, slot: SlotKey) {
   await ensureStudent(studentId);
   await prisma.$transaction(async (tx) => {
-    await tx.classAssignment.createMany({ data: [{ studentId, weekday, slot }], skipDuplicates: true });
+    await tx.classAssignment.createMany({
+      data: [{ studentId, weekday, slot }],
+      skipDuplicates: true,
+    });
     await autoTick(tx, studentId, "class_scheduled");
   });
   publish("class-schedule.updated", { studentId });

@@ -12,7 +12,9 @@ const TYPES: Record<string, string> = Object.fromEntries(
   Object.entries(EXT).map(([t, e]) => [e, t]),
 );
 
-export const uploadDir = () => path.resolve(process.env.UPLOAD_DIR ?? "./uploads");
+// Thư mục do cấu hình chỉ định lúc chạy; không đưa vào bước truy vết tệp khi build.
+export const uploadDir = () =>
+  path.resolve(/*turbopackIgnore: true*/ process.env.UPLOAD_DIR ?? "./uploads");
 
 /** Tên tệp hợp lệ: chữ, số, '-', '.', không chứa '..' (contracts/api.md, mục Ảnh). */
 export function isSafeMediaName(name: string): boolean {
@@ -25,7 +27,7 @@ export async function saveMedia(data: Buffer, contentType: string): Promise<stri
   if (!ext) throw new Error(`Loại ảnh không hỗ trợ: ${contentType}`);
   const name = `${randomUUID()}.${ext}`;
   await mkdir(uploadDir(), { recursive: true });
-  await writeFile(path.join(uploadDir(), name), data);
+  await writeFile(path.join(/*turbopackIgnore: true*/ uploadDir(), name), data);
   return name;
 }
 
@@ -35,7 +37,7 @@ export async function readMedia(
   if (!isSafeMediaName(name)) return null;
   const ext = name.split(".").pop() ?? "";
   try {
-    const data = await readFile(path.join(uploadDir(), name));
+    const data = await readFile(path.join(/*turbopackIgnore: true*/ uploadDir(), name));
     return { data, contentType: TYPES[ext] ?? "application/octet-stream" };
   } catch {
     return null;
