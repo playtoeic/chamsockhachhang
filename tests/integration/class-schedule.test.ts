@@ -29,6 +29,20 @@ describe("xếp lịch học (FR-019, FR-020)", () => {
     expect(step).toMatchObject({ done: true, doneByUserId: null });
   });
 
+  it("chỉ khung đầu tiên tự tick: bỏ tick bằng tay rồi thêm khung khác thì không bị tick lại", async () => {
+    const s = await createStudent();
+    await put(s.id, "1", "S1");
+    await prisma.stepProgress.update({
+      where: { studentId_step: { studentId: s.id, step: "class_scheduled" } },
+      data: { done: false, doneAt: null },
+    });
+    await put(s.id, "2", "S1");
+    const step = await prisma.stepProgress.findUniqueOrThrow({
+      where: { studentId_step: { studentId: s.id, step: "class_scheduled" } },
+    });
+    expect(step.done).toBe(false);
+  });
+
   it("PUT lặp lại cùng khung không tạo bản ghi thứ hai và không báo lỗi", async () => {
     const s = await createStudent();
     await put(s.id, "2", "S2");

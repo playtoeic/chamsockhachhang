@@ -39,12 +39,14 @@ export async function setTrial(studentId: string, date: string, slot: SlotKey) {
   const attempt = () =>
     prisma.$transaction(async (tx) => {
       const now = clock.now();
+      const existed = await tx.trialBooking.count({ where: { studentId } });
       const booking = await tx.trialBooking.upsert({
         where: { studentId },
         create: { studentId, date: toDbDate(date), slot, autoMarkedAt: null },
         update: { date: toDbDate(date), slot, autoMarkedAt: null },
       });
-      await autoTick(tx, studentId, "trial_scheduled");
+      // Chỉ khi tạo buổi (chưa có buổi nào) mới tự tick; chuyển buổi thì không (data-model.md).
+      if (existed === 0) await autoTick(tx, studentId, "trial_scheduled");
       if (slotEnd(date, slot) > now) {
         // 'đã học thử' do tự động mà được xếp lại sang tương lai thì về 'đang tham khảo' (FR-014b).
         await tx.student.updateMany({

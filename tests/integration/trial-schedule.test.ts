@@ -59,6 +59,20 @@ describe("xếp lịch học thử", () => {
     ]);
   });
 
+  it("chỉ buổi đầu tiên tự tick: bỏ tick bằng tay rồi chuyển buổi thì không bị tick lại", async () => {
+    const s = await createStudent();
+    await put(s.id, "2026-11-18", "S3");
+    await prisma.stepProgress.update({
+      where: { studentId_step: { studentId: s.id, step: "trial_scheduled" } },
+      data: { done: false, doneAt: null },
+    });
+    await put(s.id, "2026-11-19", "S1");
+    const step = await prisma.stepProgress.findUniqueOrThrow({
+      where: { studentId_step: { studentId: s.id, step: "trial_scheduled" } },
+    });
+    expect(step.done).toBe(false);
+  });
+
   it("hai PUT đồng thời vẫn chỉ còn một buổi", async () => {
     const s = await createStudent();
     await Promise.all([put(s.id, "2026-11-18", "S3"), put(s.id, "2026-11-20", "S4")]);

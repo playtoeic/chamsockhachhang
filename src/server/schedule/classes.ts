@@ -24,11 +24,13 @@ async function ensureStudent(id: string) {
 export async function addSlot(studentId: string, weekday: number, slot: SlotKey) {
   await ensureStudent(studentId);
   await prisma.$transaction(async (tx) => {
+    const before = await tx.classAssignment.count({ where: { studentId } });
     await tx.classAssignment.createMany({
       data: [{ studentId, weekday, slot }],
       skipDuplicates: true,
     });
-    await autoTick(tx, studentId, "class_scheduled");
+    // Chỉ khung đầu tiên mới tự tick (data-model.md, StepProgress).
+    if (before === 0) await autoTick(tx, studentId, "class_scheduled");
   });
   publish("class-schedule.updated", { studentId });
   publish("student.updated", { studentId });
