@@ -851,3 +851,43 @@ textarea {
 .chip-text {
   overflow: hidden;
 }
+
+/* ---------- Hỏi – đáp ---------- */
+
+.qa-panel {
+  width: 360px;
+  flex: none;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qa-head {
+  justify-content: space-between;
+}
+
+.qa-head h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.qa-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qa-list li {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+
+.qa-answer {
+  white-space: pre-wrap;
+  margin: 4px 0 6px;
+}

@@ -239,14 +239,14 @@ nguyên (quickstart.md kịch bản 5).
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T082 [P] [US6] Integration test trong `tests/integration/qa.test.ts`: chủ thêm, sửa, xoá; `question` hoặc `answer` trống trả `400`; nhân viên GET được nhưng POST/PATCH/DELETE nhận `403`; `q` khớp cả câu hỏi lẫn câu trả lời, không phân biệt hoa thường
-- [ ] T083 [P] [US6] E2E test trong `tests/e2e/qa.spec.ts` theo quickstart.md kịch bản 6: chủ thêm một cặp; nhân viên tìm bằng từ khoá, bấm sao chép và dán được nội dung; nhân viên không thấy nút sửa/xoá
+- [X] T082 [P] [US6] Integration test trong `tests/integration/qa.test.ts`: chủ thêm, sửa, xoá; `question` hoặc `answer` trống trả `400`; nhân viên GET được nhưng POST/PATCH/DELETE nhận `403`; `q` khớp cả câu hỏi lẫn câu trả lời, không phân biệt hoa thường
+- [X] T083 [P] [US6] E2E test trong `tests/e2e/qa.spec.ts` theo quickstart.md kịch bản 6: chủ thêm một cặp; nhân viên tìm bằng từ khoá, bấm sao chép và dán được nội dung; nhân viên không thấy nút sửa/xoá
 
 ### Implementation for User Story 6
 
-- [ ] T084 [US6] Cài đặt Q&A trong `src/server/qa/qa.ts` (danh sách có tìm kiếm, thêm, sửa, xoá; ghi `updatedByUserId`, `updatedAt`; phát `qa.updated`)
-- [ ] T085 [US6] Tạo các route `src/app/api/qa/route.ts` (GET cho mọi người; POST dùng `requireOwner`) và `src/app/api/qa/[id]/route.ts` (PATCH, DELETE dùng `requireOwner`) (làm T082 đạt)
-- [ ] T086 [US6] Dựng phần Q&A trong `src/components/steps/QaPanel.tsx` (ô tìm kiếm, danh sách hỏi–đáp, nút sao chép câu trả lời, form thêm/sửa/xoá chỉ hiện với chủ) và gắn vào `src/app/(app)/steps/page.tsx` (làm T083 đạt)
+- [X] T084 [US6] Cài đặt Q&A trong `src/server/qa/qa.ts` (danh sách có tìm kiếm, thêm, sửa, xoá; ghi `updatedByUserId`, `updatedAt`; phát `qa.updated`)
+- [X] T085 [US6] Tạo các route `src/app/api/qa/route.ts` (GET cho mọi người; POST dùng `requireOwner`) và `src/app/api/qa/[id]/route.ts` (PATCH, DELETE dùng `requireOwner`) (làm T082 đạt)
+- [X] T086 [US6] Dựng phần Q&A trong `src/components/steps/QaPanel.tsx` (ô tìm kiếm, danh sách hỏi–đáp, nút sao chép câu trả lời, form thêm/sửa/xoá chỉ hiện với chủ) và gắn vào `src/app/(app)/steps/page.tsx` (làm T083 đạt)
 
 **Checkpoint**: Đủ cả 6 user story
 
