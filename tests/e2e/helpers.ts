@@ -1,5 +1,5 @@
 import { PrismaClient, type Role } from "@prisma/client";
-import type { BrowserContext } from "@playwright/test";
+import { expect, type BrowserContext, type Page } from "@playwright/test";
 import { createSession, SESSION_COOKIE } from "../helpers/session";
 import { E2E_ENV } from "./env";
 
@@ -36,3 +36,20 @@ export async function loginAs(
 
 export const OWNER = { email: E2E_ENV.OWNER_EMAIL, role: "owner" as const, name: "Chủ trung tâm" };
 export const STAFF = { email: "nhanvien@gmail.com", role: "staff" as const, name: "Nhân viên Lan" };
+
+/** Kết nối kênh giả lập ở trang Kênh (cần tài khoản chủ). */
+export async function connectSimulator(page: Page) {
+  await page.goto("/settings/channels");
+  await page.getByRole("button", { name: "Kết nối Giả lập" }).click();
+  await expect(page.getByText("Trang giả lập")).toBeVisible();
+  await expect(page.getByText("Đang kết nối")).toBeVisible();
+}
+
+/** Một khách gửi tin qua kênh giả lập. */
+export async function customerSays(page: Page, name: string, text: string) {
+  await page.goto("/dev/simulator");
+  await page.getByLabel("Tên khách").fill(name);
+  await page.getByLabel("Nội dung").fill(text);
+  await page.getByRole("button", { name: "Gửi tin của khách" }).click();
+  await expect(page.getByText("Đã gửi tin của khách")).toBeVisible();
+}

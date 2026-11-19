@@ -1,3 +1,5 @@
+import { StepsPage } from "@/components/steps/StepsPage";
+
 export default function Page() {
-  return <h1>Các bước</h1>;
+  return <StepsPage />;
 }

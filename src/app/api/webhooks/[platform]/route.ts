@@ -1,3 +1,4 @@
+import "@/server/init";
 import { getAdapter } from "@/server/channels/registry";
 import { receiveWebhook } from "@/server/inbox/receive";
 

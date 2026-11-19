@@ -449,3 +449,231 @@ textarea {
 .sim label.check {
   flex-direction: row;
 }
+
+/* ---------- Ô tên, chú thích, tiến độ ---------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 4px;
+  border: 1.5px solid;
+  border-radius: 999px;
+  max-width: 100%;
+  cursor: default;
+  user-select: none;
+}
+
+.chip[role="button"],
+.chip.draggable {
+  cursor: grab;
+}
+
+.chip.compact {
+  padding: 1px 6px 1px 2px;
+  font-size: 12px;
+}
+
+.chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.chip-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.chip-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chip-source {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.legend {
+  display: flex;
+  gap: 14px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-track {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+  min-width: 80px;
+}
+
+.progress-seg {
+  flex: 1;
+  height: 8px;
+  border-radius: 3px;
+  background: #e3e6eb;
+}
+
+.progress-seg.done {
+  background: var(--status-trialed);
+}
+
+.progress-count {
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 26px;
+}
+
+/* ---------- Các bước ---------- */
+
+.steps-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.steps-head h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.steps-body {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.student-list {
+  width: 380px;
+  flex: none;
+  max-height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+}
+
+.student-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.student-items li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.student-items li.selected {
+  background: var(--accent-soft);
+}
+
+.steps-detail {
+  flex: 1;
+  min-width: 300px;
+}
+
+.student-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.step-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.step-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.step-by,
+.small {
+  font-size: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.create-form,
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.note {
+  white-space: pre-wrap;
+  background: #f7f8fa;
+  padding: 8px;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.student-panel h3 {
+  margin-top: 0;
+}
+
+.link-box {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.link-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.link-results .chip {
+  cursor: pointer;
+}

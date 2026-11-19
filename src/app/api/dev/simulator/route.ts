@@ -1,3 +1,4 @@
+import "@/server/init";
 import { z } from "zod";
 import { requireUser } from "@/server/auth/guards";
 import { simulatorEnabled } from "@/server/channels/registry";
