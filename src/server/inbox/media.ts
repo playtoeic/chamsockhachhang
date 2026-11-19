@@ -8,7 +8,9 @@ const EXT: Record<string, string> = {
   "image/gif": "gif",
   "image/webp": "webp",
 };
-const TYPES: Record<string, string> = Object.fromEntries(Object.entries(EXT).map(([t, e]) => [e, t]));
+const TYPES: Record<string, string> = Object.fromEntries(
+  Object.entries(EXT).map(([t, e]) => [e, t]),
+);
 
 export const uploadDir = () => path.resolve(process.env.UPLOAD_DIR ?? "./uploads");
 
@@ -27,7 +29,9 @@ export async function saveMedia(data: Buffer, contentType: string): Promise<stri
   return name;
 }
 
-export async function readMedia(name: string): Promise<{ data: Buffer; contentType: string } | null> {
+export async function readMedia(
+  name: string,
+): Promise<{ data: Buffer; contentType: string } | null> {
   if (!isSafeMediaName(name)) return null;
   const ext = name.split(".").pop() ?? "";
   try {

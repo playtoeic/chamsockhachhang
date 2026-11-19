@@ -29,7 +29,10 @@ export function NameChip({
   return (
     <div
       className={`chip${compact ? " compact" : ""}`}
-      style={{ borderColor: meta.color, background: `color-mix(in srgb, ${meta.color} 14%, white)` }}
+      style={{
+        borderColor: meta.color,
+        background: `color-mix(in srgb, ${meta.color} 14%, white)`,
+      }}
       data-status={student.status}
       title={`${student.name} — ${meta.label}${student.source ? ` — ${student.source}` : ""}`}
       onClick={onClick}

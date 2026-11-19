@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { connectSimulator, customerSays, loginAs, OWNER, resetDb } from "./helpers";
 
-const convs = () => pageRef.getByRole("region", { name: "Danh sách cuộc trò chuyện" }).getByRole("listitem");
+const convs = () =>
+  pageRef.getByRole("region", { name: "Danh sách cuộc trò chuyện" }).getByRole("listitem");
 let pageRef: import("@playwright/test").Page;
 
 test.beforeEach(async () => {
@@ -34,7 +35,9 @@ test("hộp thư chung: nhận, trả lời, gửi thất bại, gửi lại, tr
   await expect(thread.getByText("Chủ trung tâm").first()).toBeVisible();
 
   await page.goto("/dev/simulator");
-  await expect(page.getByRole("table", { name: "Hộp thư đi" })).toContainText("Chào bạn, lịch học tối thứ 3");
+  await expect(page.getByRole("table", { name: "Hộp thư đi" })).toContainText(
+    "Chào bạn, lịch học tối thứ 3",
+  );
 
   // Bật "từ chối tin gửi": tin hiện "gửi thất bại" kèm lý do và gửi lại được.
   await page.getByLabel("Từ chối tin gửi").selectOption("rejected");
@@ -70,7 +73,11 @@ test("hộp thư chung: nhận, trả lời, gửi thất bại, gửi lại, tr
   await page.goto("/inbox");
   await convs().filter({ hasText: "Khách A" }).click();
   await page.getByRole("button", { name: "Nhận" }).click();
-  await expect(page.getByRole("region", { name: "Cuộc trò chuyện", exact: true }).getByText("Phụ trách: Chủ trung tâm")).toBeVisible();
+  await expect(
+    page
+      .getByRole("region", { name: "Cuộc trò chuyện", exact: true })
+      .getByText("Phụ trách: Chủ trung tâm"),
+  ).toBeVisible();
   await page.getByLabel("Người phụ trách").selectOption("me");
   await expect(convs()).toHaveCount(1);
   await expect(convs().first()).toContainText("Khách A");

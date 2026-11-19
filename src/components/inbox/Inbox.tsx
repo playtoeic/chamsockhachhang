@@ -16,7 +16,12 @@ type Props = {
 };
 
 export function Inbox({ platforms, sidePanel }: Props) {
-  const [filters, setFilters] = useState<InboxFilters>({ platform: "", unreadOnly: false, assignee: "", q: "" });
+  const [filters, setFilters] = useState<InboxFilters>({
+    platform: "",
+    unreadOnly: false,
+    assignee: "",
+    q: "",
+  });
   const [items, setItems] = useState<ConversationItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<ConversationItem | null>(null);
@@ -128,16 +133,22 @@ export function Inbox({ platforms, sidePanel }: Props) {
               users={users}
               onSend={(text) =>
                 run(async () => {
-                  await api(`/api/conversations/${detail.id}/messages`, { method: "POST", body: { body: text } });
+                  await api(`/api/conversations/${detail.id}/messages`, {
+                    method: "POST",
+                    body: { body: text },
+                  });
                   await loadSelected(detail.id);
                 })
               }
               onAssign={(userId) =>
                 run(async () => {
-                  const d = await api<ConversationItem>(`/api/conversations/${detail.id}/assignee`, {
-                    method: "PUT",
-                    body: { userId },
-                  });
+                  const d = await api<ConversationItem>(
+                    `/api/conversations/${detail.id}/assignee`,
+                    {
+                      method: "PUT",
+                      body: { userId },
+                    },
+                  );
                   setDetail(d);
                   await loadList();
                 })

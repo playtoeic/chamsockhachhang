@@ -14,7 +14,12 @@ export type ConversationItem = {
   replyWindowExpiresAt: string | null;
   assignee: UserRef | null;
   student: { id: string; name: string; status: StudentStatus } | null;
-  lastMessage: { direction: "inbound" | "outbound"; kind: string; body: string | null; unsupportedType: string | null } | null;
+  lastMessage: {
+    direction: "inbound" | "outbound";
+    kind: string;
+    body: string | null;
+    unsupportedType: string | null;
+  } | null;
 };
 
 export type MessageItem = {
@@ -31,4 +36,9 @@ export type MessageItem = {
   fromNativeApp: boolean;
 };
 
-export type ActiveUser = { id: string; name: string | null; email: string; role: "owner" | "staff" };
+export type ActiveUser = {
+  id: string;
+  name: string | null;
+  email: string;
+  role: "owner" | "staff";
+};

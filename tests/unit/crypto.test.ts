@@ -22,7 +22,11 @@ describe("crypto", () => {
   it("dữ liệu bị sửa thì lỗi", () => {
     const box = encrypt("bí mật");
     const [iv, tag, data] = box.split(".");
-    const tampered = [iv, tag, Buffer.from("x" + Buffer.from(data, "base64").toString()).toString("base64")].join(".");
+    const tampered = [
+      iv,
+      tag,
+      Buffer.from("x" + Buffer.from(data, "base64").toString()).toString("base64"),
+    ].join(".");
     expect(() => decrypt(tampered)).toThrow();
   });
 

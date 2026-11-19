@@ -21,7 +21,11 @@ beforeEach(async () => {
 
 /** Đi hết luồng kết nối: connect → (trang cấp quyền) → callback, giữ cookie state. */
 async function connectSimulator() {
-  const start = await call(connect.POST, { method: "POST", cookie: owner.cookie, params: { platform: "simulator" } });
+  const start = await call(connect.POST, {
+    method: "POST",
+    cookie: owner.cookie,
+    params: { platform: "simulator" },
+  });
   expect(start.status).toBe(200);
   const redirect = new URL(start.json.redirectUrl);
   const stateCookie = start.headers.get("set-cookie")!.split(";")[0];
@@ -35,8 +39,24 @@ async function connectSimulator() {
 describe("API kênh", () => {
   it("nhân viên gọi connect hoặc DELETE nhận 403", async () => {
     const conn = await createConnection();
-    expect((await call(connect.POST, { method: "POST", cookie: staff.cookie, params: { platform: "simulator" } })).status).toBe(403);
-    expect((await call(one.DELETE, { method: "DELETE", cookie: staff.cookie, params: { platform: conn.id } })).status).toBe(403);
+    expect(
+      (
+        await call(connect.POST, {
+          method: "POST",
+          cookie: staff.cookie,
+          params: { platform: "simulator" },
+        })
+      ).status,
+    ).toBe(403);
+    expect(
+      (
+        await call(one.DELETE, {
+          method: "DELETE",
+          cookie: staff.cookie,
+          params: { platform: conn.id },
+        })
+      ).status,
+    ).toBe(403);
   });
 
   it("GET không bao giờ trả credentials", async () => {
@@ -48,7 +68,11 @@ describe("API kênh", () => {
   });
 
   it("platform không thuộc danh sách trả 404", async () => {
-    const res = await call(connect.POST, { method: "POST", cookie: owner.cookie, params: { platform: "tiktok" } });
+    const res = await call(connect.POST, {
+      method: "POST",
+      cookie: owner.cookie,
+      params: { platform: "tiktok" },
+    });
     expect(res.status).toBe(404);
   });
 
@@ -66,15 +90,31 @@ describe("API kênh", () => {
     const res = await connectSimulator();
     expect(res.status).toBe(303);
     const conn = await prisma.channelConnection.findFirstOrThrow();
-    expect(conn).toMatchObject({ platform: "simulator", externalAccountId: "sim-account", status: "connected" });
+    expect(conn).toMatchObject({
+      platform: "simulator",
+      externalAccountId: "sim-account",
+      status: "connected",
+    });
     expect(conn.credentials).not.toContain("sim");
   });
 
   it("ngắt kết nối đặt disconnected, xoá credentials, giữ bản ghi và lịch sử tin nhắn", async () => {
     const conn = await createConnection();
     const conv = await createConversation(conn.id);
-    await prisma.message.create({ data: { conversationId: conv.id, direction: "inbound", kind: "text", body: "x", status: "received" } });
-    const res = await call(one.DELETE, { method: "DELETE", cookie: owner.cookie, params: { platform: conn.id } });
+    await prisma.message.create({
+      data: {
+        conversationId: conv.id,
+        direction: "inbound",
+        kind: "text",
+        body: "x",
+        status: "received",
+      },
+    });
+    const res = await call(one.DELETE, {
+      method: "DELETE",
+      cookie: owner.cookie,
+      params: { platform: conn.id },
+    });
     expect(res.status).toBe(200);
     const after = await prisma.channelConnection.findUniqueOrThrow({ where: { id: conn.id } });
     expect(after).toMatchObject({ status: "disconnected", credentials: null });
@@ -96,7 +136,15 @@ describe("API kênh", () => {
 
     const raw = JSON.stringify({
       accountId: "sim-account",
-      events: [{ type: "message", threadId: "t1", messageId: "m1", text: "Lại là tôi", sentAt: new Date().toISOString() }],
+      events: [
+        {
+          type: "message",
+          threadId: "t1",
+          messageId: "m1",
+          text: "Lại là tôi",
+          sentAt: new Date().toISOString(),
+        },
+      ],
     });
     await webhook(
       new Request("http://localhost/api/webhooks/simulator", {

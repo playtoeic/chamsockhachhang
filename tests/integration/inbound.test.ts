@@ -95,7 +95,15 @@ describe("POST /api/webhooks/simulator — luồng tin đến", () => {
         sentByUserId: user.id,
       },
     });
-    await webhook([{ type: "echo", threadId: "t1", messageId: "out-1", text: "Chào bạn", sentAt: at("2026-11-16T03:05:00Z") }]);
+    await webhook([
+      {
+        type: "echo",
+        threadId: "t1",
+        messageId: "out-1",
+        text: "Chào bạn",
+        sentAt: at("2026-11-16T03:05:00Z"),
+      },
+    ]);
     expect(await prisma.message.count()).toBe(2);
   });
 
@@ -103,12 +111,27 @@ describe("POST /api/webhooks/simulator — luồng tin đến", () => {
     await webhook([textEvent()]);
     await prisma.conversation.updateMany({ data: { unread: false } });
     const before = await prisma.conversation.findFirstOrThrow();
-    await webhook([{ type: "echo", threadId: "t1", messageId: "app-1", text: "Trả lời trong app", sentAt: at("2026-11-16T04:00:00Z") }]);
+    await webhook([
+      {
+        type: "echo",
+        threadId: "t1",
+        messageId: "app-1",
+        text: "Trả lời trong app",
+        sentAt: at("2026-11-16T04:00:00Z"),
+      },
+    ]);
     const conv = await prisma.conversation.findFirstOrThrow();
     const echo = await prisma.message.findFirstOrThrow({ where: { externalMessageId: "app-1" } });
-    expect(echo).toMatchObject({ direction: "outbound", status: "sent", sentByUserId: null, body: "Trả lời trong app" });
+    expect(echo).toMatchObject({
+      direction: "outbound",
+      status: "sent",
+      sentByUserId: null,
+      body: "Trả lời trong app",
+    });
     expect(conv.unread).toBe(false);
-    expect(conv.replyWindowExpiresAt?.toISOString()).toBe(before.replyWindowExpiresAt?.toISOString());
+    expect(conv.replyWindowExpiresAt?.toISOString()).toBe(
+      before.replyWindowExpiresAt?.toISOString(),
+    );
     expect(conv.lastMessageAt.toISOString()).toBe(at("2026-11-16T04:00:00Z"));
   });
 
@@ -124,8 +147,16 @@ describe("POST /api/webhooks/simulator — luồng tin đến", () => {
 
   it("tin ảnh lưu bản sao; tải ảnh lỗi thì lưu kind = unsupported loại image", async () => {
     await webhook([
-      textEvent({ messageId: "img-ok", text: undefined, attachment: { type: "image", ref: "sim://image/1" } }),
-      textEvent({ messageId: "img-bad", text: undefined, attachment: { type: "image", ref: "sim://fail" } }),
+      textEvent({
+        messageId: "img-ok",
+        text: undefined,
+        attachment: { type: "image", ref: "sim://image/1" },
+      }),
+      textEvent({
+        messageId: "img-bad",
+        text: undefined,
+        attachment: { type: "image", ref: "sim://fail" },
+      }),
     ]);
     const ok = await prisma.message.findFirstOrThrow({ where: { externalMessageId: "img-ok" } });
     const bad = await prisma.message.findFirstOrThrow({ where: { externalMessageId: "img-bad" } });

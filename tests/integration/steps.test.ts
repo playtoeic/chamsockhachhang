@@ -57,11 +57,16 @@ describe("tick 5 bước (FR-025)", () => {
   it("autoTick chỉ tick khi bước đang chưa xong, không ghi người tick", async () => {
     const s = await createStudent();
     await autoTick(prisma, s.id, "trial_scheduled");
-    expect(await prisma.stepProgress.findFirstOrThrow()).toMatchObject({ done: true, doneByUserId: null });
+    expect(await prisma.stepProgress.findFirstOrThrow()).toMatchObject({
+      done: true,
+      doneByUserId: null,
+    });
 
     await tick(s.id, "class_scheduled", true);
     await autoTick(prisma, s.id, "class_scheduled");
-    const manual = await prisma.stepProgress.findFirstOrThrow({ where: { step: "class_scheduled" } });
+    const manual = await prisma.stepProgress.findFirstOrThrow({
+      where: { step: "class_scheduled" },
+    });
     expect(manual.doneByUserId).toBe(me.user.id);
   });
 });

@@ -26,7 +26,9 @@ export function toSummary(s: SummaryRow) {
     autoCreated: s.autoCreated,
     lastActivityAt: s.lastActivityAt,
     stepsDone: s.steps.length,
-    trial: s.trialBooking ? { date: s.trialBooking.date.toISOString().slice(0, 10), slot: s.trialBooking.slot } : null,
+    trial: s.trialBooking
+      ? { date: s.trialBooking.date.toISOString().slice(0, 10), slot: s.trialBooking.slot }
+      : null,
     classSlotCount: s._count.classSlots,
   };
 }
@@ -37,9 +39,15 @@ export const cleanName = (name: string) => {
   if (!n) throw validation("Tên học sinh không được trống");
   return n;
 };
-const cleanOptional = (v: string | null | undefined) => (v === undefined ? undefined : v?.trim() || null);
+const cleanOptional = (v: string | null | undefined) =>
+  v === undefined ? undefined : v?.trim() || null;
 
-export async function listStudents(f: { status?: StudentStatus; pendingStep?: Step; q?: string; limit?: number }) {
+export async function listStudents(f: {
+  status?: StudentStatus;
+  pendingStep?: Step;
+  q?: string;
+  limit?: number;
+}) {
   const where: Prisma.StudentWhereInput = {};
   if (f.status) where.status = f.status;
   if (f.pendingStep) where.steps = { none: { step: f.pendingStep, done: true } };
@@ -77,7 +85,13 @@ export async function getStudent(id: string) {
     ...toSummary({ ...s, steps: s.steps.filter((r) => r.done) }),
     steps: STEPS.map(({ key, label }) => {
       const r = byStep.get(key);
-      return { step: key, label, done: !!r?.done, doneBy: r?.done ? r.doneBy : null, doneAt: r?.done ? r.doneAt : null };
+      return {
+        step: key,
+        label,
+        done: !!r?.done,
+        doneBy: r?.done ? r.doneBy : null,
+        doneAt: r?.done ? r.doneAt : null,
+      };
     }),
     classSlots: s.classSlots.map((c) => ({ weekday: c.weekday, slot: c.slot })),
     conversations: s.conversations.map((c) => ({
@@ -88,7 +102,12 @@ export async function getStudent(id: string) {
   };
 }
 
-export async function createStudent(input: { name: string; source?: string | null; note?: string | null; conversationId?: string }) {
+export async function createStudent(input: {
+  name: string;
+  source?: string | null;
+  note?: string | null;
+  conversationId?: string;
+}) {
   const student = await prisma.student.create({
     data: {
       name: cleanName(input.name),
@@ -116,7 +135,9 @@ export async function updateStudent(
       ...(input.source !== undefined ? { source: cleanOptional(input.source) } : {}),
       ...(input.note !== undefined ? { note: cleanOptional(input.note) } : {}),
       // Đổi trạng thái bằng tay luôn ghi nguồn 'manual' (FR-014a).
-      ...(input.status !== undefined ? { status: input.status, statusSource: "manual" as const } : {}),
+      ...(input.status !== undefined
+        ? { status: input.status, statusSource: "manual" as const }
+        : {}),
     },
   });
   publish("student.updated", { studentId: id });
@@ -124,7 +145,10 @@ export async function updateStudent(
 }
 
 export async function deleteStudent(id: string) {
-  const s = await prisma.student.findUnique({ where: { id }, include: { conversations: { select: { id: true } } } });
+  const s = await prisma.student.findUnique({
+    where: { id },
+    include: { conversations: { select: { id: true } } },
+  });
   if (!s) throw notFound("Học sinh");
   await prisma.student.delete({ where: { id } });
   publish("student.deleted", { studentId: id });
@@ -144,7 +168,8 @@ async function deleteIfEmptyAuto(tx: Tx, studentId: string): Promise<boolean> {
     },
   });
   if (!s || !s.autoCreated) return false;
-  if (s._count.conversations > 0 || s._count.classSlots > 0 || s.trialBooking || s.steps.length > 0) return false;
+  if (s._count.conversations > 0 || s._count.classSlots > 0 || s.trialBooking || s.steps.length > 0)
+    return false;
   await tx.student.delete({ where: { id: studentId } });
   return true;
 }

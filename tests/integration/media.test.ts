@@ -17,9 +17,12 @@ beforeEach(async () => {
 
 describe("GET /api/media/{name}", () => {
   it("người đã đăng nhập nhận đúng ảnh với Cache-Control: private", async () => {
-    const res = await GET(new Request("http://localhost/api/media/abc-123.png", { headers: { cookie } }), {
-      params: Promise.resolve({ name: "abc-123.png" }),
-    });
+    const res = await GET(
+      new Request("http://localhost/api/media/abc-123.png", { headers: { cookie } }),
+      {
+        params: Promise.resolve({ name: "abc-123.png" }),
+      },
+    );
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toBe("image/png");
     expect(res.headers.get("cache-control")).toContain("private");

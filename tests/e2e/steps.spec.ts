@@ -50,7 +50,10 @@ test("khách tự có hồ sơ; tạo hồ sơ thủ công; tick bước; đổi
   const staffPage = await other.newPage();
   await loginAs(other, STAFF);
   await staffPage.goto("/steps");
-  await staffPage.getByRole("region", { name: "Danh sách học sinh" }).getByLabel("Khách A, Đã đăng ký").click();
+  await staffPage
+    .getByRole("region", { name: "Danh sách học sinh" })
+    .getByLabel("Khách A, Đã đăng ký")
+    .click();
   const staffDetail = staffPage.getByRole("region", { name: "Chi tiết Khách A" });
   await expect(staffDetail.getByRole("img", { name: "Tiến độ 1/5" })).toBeVisible();
   await expect(staffDetail.getByLabel("Làm test đầu vào")).toBeChecked();

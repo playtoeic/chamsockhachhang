@@ -51,7 +51,11 @@ describe("làm mới thông tin truy cập trước khi gửi", () => {
     const msg = await sendReply(conv.id, user.id, "chào");
     await flushDeliveries();
     expect(sentWith).toHaveLength(0);
-    expect((await prisma.message.findUniqueOrThrow({ where: { id: msg.id } })).status).toBe("failed");
-    expect((await prisma.channelConnection.findUniqueOrThrow({ where: { id: conn.id } })).status).toBe("disconnected");
+    expect((await prisma.message.findUniqueOrThrow({ where: { id: msg.id } })).status).toBe(
+      "failed",
+    );
+    expect(
+      (await prisma.channelConnection.findUniqueOrThrow({ where: { id: conn.id } })).status,
+    ).toBe("disconnected");
   });
 });

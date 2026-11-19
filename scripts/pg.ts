@@ -21,8 +21,9 @@ export async function startLocalPg(opts: {
     port: opts.port,
     persistent: true,
     // Bắt buộc UTF-8: trên Windows, initdb mặc định theo bảng mã hệ thống (WIN1252) và không
-    // lưu được tiếng Việt.
-    initdbFlags: ["--encoding=UTF8", "--locale=C"],
+    // lưu được tiếng Việt. Dùng ICU để so khớp không phân biệt hoa thường đúng với chữ có dấu
+    // (ví dụ tìm "đỏ" ra "Đỏ"); locale C thì không làm được.
+    initdbFlags: ["--encoding=UTF8", "--locale=C", "--locale-provider=icu", "--icu-locale=vi"],
     onLog: () => {},
   });
   if (!existsSync(path.join(databaseDir, "PG_VERSION"))) {

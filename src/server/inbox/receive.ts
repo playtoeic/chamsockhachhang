@@ -32,7 +32,11 @@ export function credentialsOf(conn: ChannelConnection): Credentials {
 }
 
 /** Xử lý webhook: trả 401 nếu chữ ký sai, 404 nếu không có adapter, 200 khi đã lưu. */
-export async function receiveWebhook(platform: string, headers: Headers, rawBody: string): Promise<number> {
+export async function receiveWebhook(
+  platform: string,
+  headers: Headers,
+  rawBody: string,
+): Promise<number> {
   const adapter = getAdapter(platform);
   if (!adapter) return 404;
   if (!adapter.verifyWebhook(headers, rawBody)) return 401;
@@ -101,7 +105,10 @@ async function findOrCreateConversation(
 async function processInbound(adapter: ChannelAdapter, msg: InboundMessage): Promise<void> {
   const conn = await prisma.channelConnection.findUnique({
     where: {
-      platform_externalAccountId: { platform: adapter.platform, externalAccountId: msg.externalAccountId },
+      platform_externalAccountId: {
+        platform: adapter.platform,
+        externalAccountId: msg.externalAccountId,
+      },
     },
   });
   if (!conn) return;
@@ -158,7 +165,9 @@ async function processInbound(adapter: ChannelAdapter, msg: InboundMessage): Pro
           lastMessageAt: later(conversation.lastMessageAt),
           lastInboundAt: later(conversation.lastInboundAt),
           replyWindowExpiresAt:
-            hours === null ? null : new Date(later(conversation.lastInboundAt).getTime() + hours * 3600_000),
+            hours === null
+              ? null
+              : new Date(later(conversation.lastInboundAt).getTime() + hours * 3600_000),
         },
       });
       if (conversation.studentId) {
@@ -190,5 +199,9 @@ async function processInbound(adapter: ChannelAdapter, msg: InboundMessage): Pro
 // Kênh giả lập giao echo thẳng vào luồng này (không qua HTTP).
 simulatorState.deliver = async (rawBody) => {
   const { signSimulator } = await import("@/server/channels/simulator");
-  await receiveWebhook("simulator", new Headers({ "x-simulator-signature": signSimulator(rawBody) }), rawBody);
+  await receiveWebhook(
+    "simulator",
+    new Headers({ "x-simulator-signature": signSimulator(rawBody) }),
+    rawBody,
+  );
 };

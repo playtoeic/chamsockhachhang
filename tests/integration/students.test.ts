@@ -15,7 +15,12 @@ beforeEach(async () => {
 
 const create = (body: unknown) => call(list.POST, { method: "POST", cookie, body });
 const link = (conversationId: string, studentId: string | null) =>
-  call(convStudent.PUT, { method: "PUT", cookie, params: { id: conversationId }, body: { studentId } });
+  call(convStudent.PUT, {
+    method: "PUT",
+    cookie,
+    params: { id: conversationId },
+    body: { studentId },
+  });
 
 describe("tạo hồ sơ thủ công (FR-012a)", () => {
   it("mặc định 'đang tham khảo', nguồn tay, không tự tạo, lưu nguồn", async () => {
@@ -39,7 +44,9 @@ describe("tạo hồ sơ thủ công (FR-012a)", () => {
     const conn = await createConnection();
     const conv = await createConversation(conn.id);
     const res = await create({ name: "An", conversationId: conv.id });
-    expect((await prisma.conversation.findUniqueOrThrow({ where: { id: conv.id } })).studentId).toBe(res.json.id);
+    expect(
+      (await prisma.conversation.findUniqueOrThrow({ where: { id: conv.id } })).studentId,
+    ).toBe(res.json.id);
   });
 });
 
@@ -51,7 +58,9 @@ describe("gắn cuộc trò chuyện (FR-012b)", () => {
     const c2 = await createConversation(conn.id);
     expect((await link(c2.id, s.id)).status).toBe(200);
     const detail = await call(one.GET, { cookie, params: { id: s.id } });
-    expect(detail.json.conversations.map((c: { id: string }) => c.id).sort()).toEqual([c1.id, c2.id].sort());
+    expect(detail.json.conversations.map((c: { id: string }) => c.id).sort()).toEqual(
+      [c1.id, c2.id].sort(),
+    );
   });
 
   it("gắn sang học sinh khác thì hồ sơ tự tạo cũ còn trống bị xoá và phát student.deleted", async () => {
@@ -64,7 +73,9 @@ describe("gắn cuộc trò chuyện (FR-012b)", () => {
     await link(conv.id, keep.id);
     unsub();
     expect(await prisma.student.findUnique({ where: { id: auto.id } })).toBeNull();
-    expect(events).toContainEqual(expect.objectContaining({ type: "student.deleted", data: { studentId: auto.id } }));
+    expect(events).toContainEqual(
+      expect.objectContaining({ type: "student.deleted", data: { studentId: auto.id } }),
+    );
   });
 
   it("hồ sơ cũ được giữ nếu có lịch, có bước đã tick, còn cuộc trò chuyện khác hoặc tạo thủ công", async () => {
@@ -72,11 +83,17 @@ describe("gắn cuộc trò chuyện (FR-012b)", () => {
     const target = await createStudent({ name: "Đích" });
 
     const withTrial = await createStudent({ autoCreated: true });
-    await prisma.trialBooking.create({ data: { studentId: withTrial.id, date: new Date("2026-11-17"), slot: "S1" } });
+    await prisma.trialBooking.create({
+      data: { studentId: withTrial.id, date: new Date("2026-11-17"), slot: "S1" },
+    });
     const withClass = await createStudent({ autoCreated: true });
-    await prisma.classAssignment.create({ data: { studentId: withClass.id, weekday: 1, slot: "S2" } });
+    await prisma.classAssignment.create({
+      data: { studentId: withClass.id, weekday: 1, slot: "S2" },
+    });
     const withStep = await createStudent({ autoCreated: true });
-    await prisma.stepProgress.create({ data: { studentId: withStep.id, step: "entry_test", done: true } });
+    await prisma.stepProgress.create({
+      data: { studentId: withStep.id, step: "entry_test", done: true },
+    });
     const withOther = await createStudent({ autoCreated: true });
     await createConversation(conn.id, { studentId: withOther.id });
     const manual = await createStudent({ autoCreated: false });
@@ -94,18 +111,42 @@ describe("gắn cuộc trò chuyện (FR-012b)", () => {
     const conv = await createConversation(conn.id, { studentId: auto.id });
     await link(conv.id, null);
     expect(await prisma.student.findUnique({ where: { id: auto.id } })).not.toBeNull();
-    expect((await prisma.conversation.findUniqueOrThrow({ where: { id: conv.id } })).studentId).toBeNull();
+    expect(
+      (await prisma.conversation.findUniqueOrThrow({ where: { id: conv.id } })).studentId,
+    ).toBeNull();
   });
 });
 
 describe("sửa, lọc, xoá", () => {
   it("PATCH status luôn ghi statusSource = manual; PATCH source và note", async () => {
     const s = await createStudent();
-    await prisma.student.update({ where: { id: s.id }, data: { statusSource: "auto", status: "trialed" } });
-    const res = await call(one.PATCH, { method: "PATCH", cookie, params: { id: s.id }, body: { status: "considering", source: "TikTok", note: "Hỏi giá" } });
+    await prisma.student.update({
+      where: { id: s.id },
+      data: { statusSource: "auto", status: "trialed" },
+    });
+    const res = await call(one.PATCH, {
+      method: "PATCH",
+      cookie,
+      params: { id: s.id },
+      body: { status: "considering", source: "TikTok", note: "Hỏi giá" },
+    });
     expect(res.status).toBe(200);
-    expect(res.json).toMatchObject({ status: "considering", statusSource: "manual", source: "TikTok", note: "Hỏi giá" });
-    expect((await call(one.PATCH, { method: "PATCH", cookie, params: { id: s.id }, body: { status: "vip" } })).status).toBe(400);
+    expect(res.json).toMatchObject({
+      status: "considering",
+      statusSource: "manual",
+      source: "TikTok",
+      note: "Hỏi giá",
+    });
+    expect(
+      (
+        await call(one.PATCH, {
+          method: "PATCH",
+          cookie,
+          params: { id: s.id },
+          body: { status: "vip" },
+        })
+      ).status,
+    ).toBe(400);
   });
 
   it("lọc theo status, pendingStep, q; danh sách có avatarUrl dạng /api/media", async () => {
@@ -115,7 +156,9 @@ describe("sửa, lọc, xoá", () => {
     await prisma.stepProgress.create({ data: { studentId: a.id, step: "entry_test", done: true } });
 
     const ids = async (q: string) =>
-      (await call(list.GET, { cookie, url: `http://localhost/api/students${q}` })).json.items.map((s: { id: string }) => s.id);
+      (await call(list.GET, { cookie, url: `http://localhost/api/students${q}` })).json.items.map(
+        (s: { id: string }) => s.id,
+      );
     expect(await ids("?status=trialed")).toEqual([a.id]);
     expect(await ids("?pendingStep=entry_test")).toEqual([b.id]);
     expect(await ids("?q=bình")).toEqual([b.id]);
@@ -125,19 +168,39 @@ describe("sửa, lọc, xoá", () => {
     expect(all.find((s: { id: string }) => s.id === a.id).stepsDone).toBe(1);
   });
 
+  it("tìm không phân biệt hoa thường với chữ có dấu: 'đỏ' khớp 'Đỏ', 'ĐẶNG' khớp 'Đặng'", async () => {
+    const a = await createStudent({ name: "Học sinh Đỏ" });
+    const b = await createStudent({ name: "Đặng Thu" });
+    const ids = async (q: string) =>
+      (
+        await call(list.GET, {
+          cookie,
+          url: `http://localhost/api/students?q=${encodeURIComponent(q)}`,
+        })
+      ).json.items.map((s: { id: string }) => s.id);
+    expect(await ids("đỏ")).toEqual([a.id]);
+    expect(await ids("ĐẶNG")).toEqual([b.id]);
+  });
+
   it("xoá học sinh xoá lịch và bước, giữ cuộc trò chuyện với studentId = null", async () => {
     const conn = await createConnection();
     const s = await createStudent();
     const conv = await createConversation(conn.id, { studentId: s.id });
-    await prisma.trialBooking.create({ data: { studentId: s.id, date: new Date("2026-11-17"), slot: "S1" } });
+    await prisma.trialBooking.create({
+      data: { studentId: s.id, date: new Date("2026-11-17"), slot: "S1" },
+    });
     await prisma.classAssignment.create({ data: { studentId: s.id, weekday: 2, slot: "S3" } });
     await prisma.stepProgress.create({ data: { studentId: s.id, step: "entry_test", done: true } });
 
-    expect((await call(one.DELETE, { method: "DELETE", cookie, params: { id: s.id } })).status).toBe(200);
+    expect(
+      (await call(one.DELETE, { method: "DELETE", cookie, params: { id: s.id } })).status,
+    ).toBe(200);
     expect(await prisma.trialBooking.count()).toBe(0);
     expect(await prisma.classAssignment.count()).toBe(0);
     expect(await prisma.stepProgress.count()).toBe(0);
-    expect((await prisma.conversation.findUniqueOrThrow({ where: { id: conv.id } })).studentId).toBeNull();
+    expect(
+      (await prisma.conversation.findUniqueOrThrow({ where: { id: conv.id } })).studentId,
+    ).toBeNull();
   });
 
   it("học sinh không tồn tại trả 404", async () => {

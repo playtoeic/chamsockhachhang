@@ -18,7 +18,13 @@ export type StudentSummary = {
 };
 
 export type StudentDetail = StudentSummary & {
-  steps: { step: StepKey; label: string; done: boolean; doneBy: UserRef | null; doneAt: string | null }[];
+  steps: {
+    step: StepKey;
+    label: string;
+    done: boolean;
+    doneBy: UserRef | null;
+    doneAt: string | null;
+  }[];
   classSlots: { weekday: number; slot: string }[];
   conversations: { id: string; customerName: string; platform: PlatformKey }[];
 };

@@ -1,5 +1,5 @@
 import { PrismaClient, type Role } from "@prisma/client";
-import { expect, type BrowserContext, type Page } from "@playwright/test";
+import { expect, type BrowserContext, type Locator, type Page } from "@playwright/test";
 import { createSession, SESSION_COOKIE } from "../helpers/session";
 import { E2E_ENV } from "./env";
 
@@ -52,4 +52,29 @@ export async function customerSays(page: Page, name: string, text: string) {
   await page.getByLabel("Nội dung").fill(text);
   await page.getByRole("button", { name: "Gửi tin của khách" }).click();
   await expect(page.getByText("Đã gửi tin của khách")).toBeVisible();
+}
+
+/** Kéo thả bằng chuột theo từng bước (dnd-kit cần chuỗi sự kiện pointer có di chuyển). */
+export async function drag(page: Page, source: Locator, target: Locator) {
+  await source.scrollIntoViewIfNeeded();
+  const from = await source.boundingBox();
+  const to = await target.boundingBox();
+  if (!from || !to) throw new Error("Không tìm thấy vị trí kéo thả");
+  await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(from.x + from.width / 2 + 10, from.y + from.height / 2 + 10, { steps: 5 });
+  await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 15 });
+  await page.mouse.up();
+  // dnd-kit chặn cú bấm chuột ngay sau khi thả; chờ một nhịp như người dùng thật.
+  await page.waitForTimeout(150);
+}
+
+/** Tạo học sinh thẳng trong cơ sở dữ liệu e2e. */
+export async function seedStudent(
+  name: string,
+  data: { status?: "considering" | "trialed" | "enrolled" | "dropped"; source?: string } = {},
+) {
+  return db.student.create({
+    data: { name, status: data.status ?? "considering", source: data.source ?? null },
+  });
 }

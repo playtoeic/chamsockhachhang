@@ -2,7 +2,12 @@
 
 import { createContext, useContext } from "react";
 
-export type SessionUser = { id: string; email: string; name: string | null; role: "owner" | "staff" };
+export type SessionUser = {
+  id: string;
+  email: string;
+  name: string | null;
+  role: "owner" | "staff";
+};
 
 const Ctx = createContext<SessionUser | null>(null);
 

@@ -13,7 +13,8 @@ export class ApiError extends Error {
 
 export const unauthorized = () => new ApiError("unauthorized", 401, "Bạn cần đăng nhập");
 export const forbidden = () => new ApiError("forbidden", 403, "Bạn không có quyền làm việc này");
-export const notFound = (what = "Dữ liệu") => new ApiError("not_found", 404, `${what} không tồn tại`);
+export const notFound = (what = "Dữ liệu") =>
+  new ApiError("not_found", 404, `${what} không tồn tại`);
 export const validation = (message = "Dữ liệu không hợp lệ") =>
   new ApiError("validation", 400, message);
 

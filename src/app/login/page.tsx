@@ -16,7 +16,9 @@ export default async function LoginPage({
 }) {
   if (await getCurrentUser()) redirect("/inbox");
   const { error } = await searchParams;
-  const message = error ? (MESSAGES[error] ?? "Đăng nhập không thành công, vui lòng thử lại.") : null;
+  const message = error
+    ? (MESSAGES[error] ?? "Đăng nhập không thành công, vui lòng thử lại.")
+    : null;
 
   return (
     <main className="login panel">

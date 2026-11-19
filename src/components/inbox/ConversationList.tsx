@@ -26,13 +26,18 @@ function preview(c: ConversationItem): string {
   const prefix = m.direction === "outbound" ? "Bạn: " : "";
   if (m.kind === "text") return prefix + (m.body ?? "");
   if (m.kind === "image") return prefix + "[Ảnh]";
-  return prefix + `[${UNSUPPORTED[m.unsupportedType ?? ""] ?? m.unsupportedType ?? "nội dung khác"}]`;
+  return (
+    prefix + `[${UNSUPPORTED[m.unsupportedType ?? ""] ?? m.unsupportedType ?? "nội dung khác"}]`
+  );
 }
 
 function time(iso: string): string {
   const d = new Date(iso);
   const sameDay = d.toDateString() === new Date().toDateString();
-  return d.toLocaleString("vi-VN", sameDay ? { hour: "2-digit", minute: "2-digit" } : { day: "2-digit", month: "2-digit" });
+  return d.toLocaleString(
+    "vi-VN",
+    sameDay ? { hour: "2-digit", minute: "2-digit" } : { day: "2-digit", month: "2-digit" },
+  );
 }
 
 export function ConversationList({
@@ -64,7 +69,9 @@ export function ConversationList({
           <select
             aria-label="Kênh"
             value={filters.platform}
-            onChange={(e) => onFilters({ ...filters, platform: e.target.value as InboxFilters["platform"] })}
+            onChange={(e) =>
+              onFilters({ ...filters, platform: e.target.value as InboxFilters["platform"] })
+            }
           >
             <option value="">Mọi kênh</option>
             {platforms.map((p) => (
@@ -76,7 +83,9 @@ export function ConversationList({
           <select
             aria-label="Người phụ trách"
             value={filters.assignee}
-            onChange={(e) => onFilters({ ...filters, assignee: e.target.value as InboxFilters["assignee"] })}
+            onChange={(e) =>
+              onFilters({ ...filters, assignee: e.target.value as InboxFilters["assignee"] })
+            }
           >
             <option value="">Mọi người</option>
             <option value="me">Của tôi</option>
@@ -112,7 +121,11 @@ export function ConversationList({
                   <span className="muted conv-time">{time(c.lastMessageAt)}</span>
                 </div>
                 <div className="conv-preview muted">{preview(c)}</div>
-                {c.assignee && <div className="conv-assignee">Phụ trách: {c.assignee.name ?? c.assignee.email}</div>}
+                {c.assignee && (
+                  <div className="conv-assignee">
+                    Phụ trách: {c.assignee.name ?? c.assignee.email}
+                  </div>
+                )}
               </div>
               {c.unread && <span className="unread-dot" aria-label="Chưa đọc" role="status" />}
             </li>

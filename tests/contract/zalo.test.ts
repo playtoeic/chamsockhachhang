@@ -8,7 +8,8 @@ import { zalo } from "@/server/channels/zalo";
  * Bảo đảm hành vi 1–7 cho Zalo OA. Dữ liệu mẫu tự tạo theo định dạng webhook của Zalo OA;
  * định dạng chữ ký và thời hạn trả lời cần kiểm chứng lại với developers.zalo.me (research.md R1).
  */
-const fixture = (name: string) => readFileSync(path.resolve("tests/fixtures/zalo", `${name}.json`), "utf8");
+const fixture = (name: string) =>
+  readFileSync(path.resolve("tests/fixtures/zalo", `${name}.json`), "utf8");
 const sign = (raw: string) => {
   const ts = JSON.parse(raw).timestamp;
   return "mac=" + createHash("sha256").update(`zalo-app-1${raw}${ts}oa-secret`).digest("hex");
@@ -20,7 +21,9 @@ const hoursAgo = (h: number) => new Date(now.getTime() - h * 3600_000);
 
 let fetchMock: ReturnType<typeof vi.fn>;
 const reply = (body: unknown, status = 200) =>
-  fetchMock.mockResolvedValueOnce(new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } }));
+  fetchMock.mockResolvedValueOnce(
+    new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } }),
+  );
 
 beforeEach(() => {
   process.env.ZALO_APP_ID = "zalo-app-1";
@@ -38,7 +41,12 @@ describe("zalo: bảo đảm hành vi", () => {
     expect(zalo.verifyWebhook(new Headers(), raw)).toBe(false);
     expect(zalo.verifyWebhook(new Headers({ "x-zevent-signature": "mac=abc" }), raw)).toBe(false);
     expect(zalo.verifyWebhook(new Headers({ "x-zevent-signature": sign(raw) }), raw)).toBe(true);
-    expect(zalo.verifyWebhook(new Headers({ "x-zevent-signature": sign(raw) }), raw.replace("hỏi", "hoi"))).toBe(false);
+    expect(
+      zalo.verifyWebhook(
+        new Headers({ "x-zevent-signature": sign(raw) }),
+        raw.replace("hỏi", "hoi"),
+      ),
+    ).toBe(false);
   });
 
   it("2. tin văn bản trả đúng một InboundMessage có đủ trường", () => {
@@ -60,7 +68,10 @@ describe("zalo: bảo đảm hành vi", () => {
       kind: "image",
       mediaRef: "https://cdn.example.test/z.jpg",
     });
-    expect(zalo.parseWebhook(fixture("sticker"))[0]).toMatchObject({ kind: "unsupported", unsupportedType: "sticker" });
+    expect(zalo.parseWebhook(fixture("sticker"))[0]).toMatchObject({
+      kind: "unsupported",
+      unsupportedType: "sticker",
+    });
   });
 
   it("4. sự kiện không phải tin nhắn (đã xem) trả danh sách trống", () => {
@@ -77,19 +88,28 @@ describe("zalo: bảo đảm hành vi", () => {
     ];
     for (const [code, want] of cases) {
       reply({ error: code, message: "lỗi" });
-      expect(await zalo.sendText(creds, "zalo-user-44", "chào", hoursAgo(1), now), String(code)).toMatchObject({
+      expect(
+        await zalo.sendText(creds, "zalo-user-44", "chào", hoursAgo(1), now),
+        String(code),
+      ).toMatchObject({
         ok: false,
         error: want,
       });
     }
     fetchMock.mockClear();
-    expect(await zalo.sendText(creds, "zalo-user-44", "a".repeat(2001), hoursAgo(1), now)).toMatchObject({
+    expect(
+      await zalo.sendText(creds, "zalo-user-44", "a".repeat(2001), hoursAgo(1), now),
+    ).toMatchObject({
       ok: false,
       error: "rejected",
     });
     expect(fetchMock).not.toHaveBeenCalled();
 
-    reply({ error: 0, message: "Success", data: { message_id: "zout_1", user_id: "zalo-user-44" } });
+    reply({
+      error: 0,
+      message: "Success",
+      data: { message_id: "zout_1", user_id: "zalo-user-44" },
+    });
     expect(await zalo.sendText(creds, "zalo-user-44", "chào", hoursAgo(1), now)).toEqual({
       ok: true,
       externalMessageId: "zout_1",
@@ -127,7 +147,14 @@ describe("zalo: bảo đảm hành vi", () => {
   });
 
   it("7. fetchProfile trả tên và ảnh khi có, không có ảnh khi Zalo không trả", async () => {
-    reply({ error: 0, data: { user_id: "zalo-user-44", display_name: "Trần Bình", avatar: "https://cdn.example.test/a.jpg" } });
+    reply({
+      error: 0,
+      data: {
+        user_id: "zalo-user-44",
+        display_name: "Trần Bình",
+        avatar: "https://cdn.example.test/a.jpg",
+      },
+    });
     expect(await zalo.fetchProfile(creds, "zalo-user-44")).toEqual({
       name: "Trần Bình",
       avatarRef: "https://cdn.example.test/a.jpg",
@@ -139,8 +166,15 @@ describe("zalo: bảo đảm hành vi", () => {
   it("làm mới access token khi sắp hết hạn", async () => {
     expect(await zalo.refreshCredentials!(creds, now)).toBeNull();
     reply({ access_token: "AT2", refresh_token: "RT2", expires_in: "90000" });
-    const fresh = await zalo.refreshCredentials!({ ...creds, expiresAt: "2026-11-20T00:00:30Z" }, now);
-    expect(fresh).toEqual({ accessToken: "AT2", refreshToken: "RT2", expiresAt: "2026-11-21T01:00:00.000Z" });
+    const fresh = await zalo.refreshCredentials!(
+      { ...creds, expiresAt: "2026-11-20T00:00:30Z" },
+      now,
+    );
+    expect(fresh).toEqual({
+      accessToken: "AT2",
+      refreshToken: "RT2",
+      expiresAt: "2026-11-21T01:00:00.000Z",
+    });
     const [url, init] = fetchMock.mock.calls.at(-1)!;
     expect(url).toBe("https://oauth.zaloapp.com/v4/oa/access_token");
     expect((init as RequestInit).headers).toMatchObject({ secret_key: "app-secret" });

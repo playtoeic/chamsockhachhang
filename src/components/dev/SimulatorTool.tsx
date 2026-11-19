@@ -41,7 +41,8 @@ export function SimulatorTool() {
     <div className="sim">
       <h1>Kênh giả lập</h1>
       <p className="muted">
-        Chỉ dùng khi phát triển và test. Kết nối kênh &quot;Giả lập&quot; ở trang Kênh trước khi gửi tin.
+        Chỉ dùng khi phát triển và test. Kết nối kênh &quot;Giả lập&quot; ở trang Kênh trước khi gửi
+        tin.
       </p>
       {notice && (
         <p role="status" className="notice">
@@ -74,13 +75,21 @@ export function SimulatorTool() {
         <div className="row">
           <button
             className="primary"
-            onClick={() => post({ action: "customerMessage", customerName: name, text, kind, avatar }, "Đã gửi tin của khách")}
+            onClick={() =>
+              post(
+                { action: "customerMessage", customerName: name, text, kind, avatar },
+                "Đã gửi tin của khách",
+              )
+            }
           >
             Gửi tin của khách
           </button>
           <button
             onClick={() =>
-              post({ action: "nativeReply", customerName: name, text }, "Đã gửi câu trả lời từ ứng dụng gốc")
+              post(
+                { action: "nativeReply", customerName: name, text },
+                "Đã gửi câu trả lời từ ứng dụng gốc",
+              )
             }
             disabled={!text.trim()}
           >
@@ -96,7 +105,10 @@ export function SimulatorTool() {
           <select
             value={state?.rejectWith ?? ""}
             onChange={(e) =>
-              post({ action: "settings", rejectWith: e.target.value || null }, "Đã lưu cài đặt giả lập")
+              post(
+                { action: "settings", rejectWith: e.target.value || null },
+                "Đã lưu cài đặt giả lập",
+              )
             }
           >
             {REJECT_OPTIONS.map(([v, l]) => (

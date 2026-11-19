@@ -34,7 +34,10 @@ export function StudentList({
     e.preventDefault();
     setError(null);
     try {
-      const s = await api<StudentSummary>("/api/students", { method: "POST", body: { name, source } });
+      const s = await api<StudentSummary>("/api/students", {
+        method: "POST",
+        body: { name, source },
+      });
       setCreating(false);
       setName("");
       setSource("");
@@ -82,7 +85,13 @@ export function StudentList({
         </div>
         {creating ? (
           <form className="create-form" onSubmit={create}>
-            <input aria-label="Tên học sinh mới" placeholder="Tên" value={name} onChange={(e) => setName(e.target.value)} required />
+            <input
+              aria-label="Tên học sinh mới"
+              placeholder="Tên"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
             <input
               aria-label="Nguồn"
               placeholder="Nguồn (ví dụ Threads, TikTok)"

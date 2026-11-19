@@ -23,8 +23,14 @@ export async function setStep(studentId: string, step: Step, done: boolean, user
  * Tự tick một bước (FR-026) khi bước đang chưa xong; không ghi người tick. Không bao giờ tự bỏ tick.
  * Trả true nếu đã tick.
  */
-export async function autoTick(db: Tx | PrismaClient, studentId: string, step: Step): Promise<boolean> {
-  const current = await db.stepProgress.findUnique({ where: { studentId_step: { studentId, step } } });
+export async function autoTick(
+  db: Tx | PrismaClient,
+  studentId: string,
+  step: Step,
+): Promise<boolean> {
+  const current = await db.stepProgress.findUnique({
+    where: { studentId_step: { studentId, step } },
+  });
   if (current?.done) return false;
   await db.stepProgress.upsert({
     where: { studentId_step: { studentId, step } },

@@ -50,7 +50,9 @@ describe("tự tạo hồ sơ học sinh cho khách mới (FR-012)", () => {
     });
     expect(student.avatarPath).toBeTruthy();
     expect(conv.studentId).toBe(student.id);
-    expect(events).toContainEqual(expect.objectContaining({ type: "student.updated", data: { studentId: student.id } }));
+    expect(events).toContainEqual(
+      expect.objectContaining({ type: "student.updated", data: { studentId: student.id } }),
+    );
   });
 
   it("tin thứ hai cùng cuộc trò chuyện không tạo thêm hồ sơ và cập nhật lastActivityAt", async () => {
@@ -70,7 +72,10 @@ describe("tự tạo hồ sơ học sinh cho khách mới (FR-012)", () => {
   });
 
   it("mỗi cuộc trò chuyện mới có hồ sơ riêng", async () => {
-    await webhook([msg("m1", "2026-11-16T03:00:00Z", "t1"), msg("m2", "2026-11-16T03:01:00Z", "t2")]);
+    await webhook([
+      msg("m1", "2026-11-16T03:00:00Z", "t1"),
+      msg("m2", "2026-11-16T03:01:00Z", "t2"),
+    ]);
     expect(await prisma.student.count()).toBe(2);
   });
 });

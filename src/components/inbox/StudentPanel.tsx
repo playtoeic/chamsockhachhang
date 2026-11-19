@@ -17,18 +17,25 @@ export function StudentPanel({ conversation }: { conversation: ConversationItem 
   const [linking, setLinking] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const search = useData<{ items: StudentSummary[] }>(linking && q.trim() ? `/api/students?q=${encodeURIComponent(q.trim())}` : null);
+  const search = useData<{ items: StudentSummary[] }>(
+    linking && q.trim() ? `/api/students?q=${encodeURIComponent(q.trim())}` : null,
+  );
 
   useEvents({ "student.updated": detail.reload }, detail.reload);
 
   const link = async (target: string | null) => {
     setError(null);
     try {
-      const r = await api<{ removedStudentId: string | null }>(`/api/conversations/${conversation.id}/student`, {
-        method: "PUT",
-        body: { studentId: target },
-      });
-      setNotice(r.removedStudentId ? "Đã gắn vào hồ sơ đã có; hồ sơ tự tạo trống đã được xoá." : null);
+      const r = await api<{ removedStudentId: string | null }>(
+        `/api/conversations/${conversation.id}/student`,
+        {
+          method: "PUT",
+          body: { studentId: target },
+        },
+      );
+      setNotice(
+        r.removedStudentId ? "Đã gắn vào hồ sơ đã có; hồ sơ tự tạo trống đã được xoá." : null,
+      );
       setLinking(false);
       setQ("");
     } catch (e) {

@@ -14,7 +14,10 @@ export async function addStaff(rawEmail: string) {
     throw new ApiError("conflict", 409, "Địa chỉ này đã có quyền truy cập");
   }
   const user = existing
-    ? await prisma.user.update({ where: { id: existing.id }, data: { active: true, role: "staff" } })
+    ? await prisma.user.update({
+        where: { id: existing.id },
+        data: { active: true, role: "staff" },
+      })
     : await prisma.user.create({ data: { email, role: "staff", active: true } });
   return { id: user.id, email: user.email, name: user.name, role: user.role };
 }
@@ -28,10 +31,16 @@ export async function removeStaff(id: string) {
   if (!user) throw notFound("Người dùng");
   if (user.role === "owner") throw validation("Không gỡ được chủ trung tâm");
   const conversations = await prisma.$transaction(async (tx) => {
-    const assigned = await tx.conversation.findMany({ where: { assigneeUserId: id }, select: { id: true } });
+    const assigned = await tx.conversation.findMany({
+      where: { assigneeUserId: id },
+      select: { id: true },
+    });
     await tx.user.update({ where: { id }, data: { active: false } });
     await tx.session.deleteMany({ where: { userId: id } });
-    await tx.conversation.updateMany({ where: { assigneeUserId: id }, data: { assigneeUserId: null } });
+    await tx.conversation.updateMany({
+      where: { assigneeUserId: id },
+      data: { assigneeUserId: null },
+    });
     return assigned;
   });
   publish("session.revoked", {}, { toUserId: id });

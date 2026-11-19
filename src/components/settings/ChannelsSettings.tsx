@@ -27,7 +27,10 @@ export function ChannelsSettings() {
   const connect = async (platform: PlatformKey) => {
     setError(null);
     try {
-      const { redirectUrl } = await api<{ redirectUrl: string }>(`/api/channels/${platform}/connect`, { method: "POST" });
+      const { redirectUrl } = await api<{ redirectUrl: string }>(
+        `/api/channels/${platform}/connect`,
+        { method: "POST" },
+      );
       window.location.assign(redirectUrl);
     } catch (e) {
       setError((e as Error).message);
@@ -74,7 +77,11 @@ export function ChannelsSettings() {
                   <td className="muted">Chưa kết nối</td>
                   <td />
                   <td>
-                    <button className="primary" onClick={() => connect(platform)} aria-label={`Kết nối ${label}`}>
+                    <button
+                      className="primary"
+                      onClick={() => connect(platform)}
+                      aria-label={`Kết nối ${label}`}
+                    >
                       Kết nối
                     </button>
                   </td>
@@ -88,7 +95,9 @@ export function ChannelsSettings() {
                   {c.status === "connected" ? (
                     <span className="ok">Đang kết nối</span>
                   ) : (
-                    <span className="error">Mất kết nối{c.lastError ? `: ${c.lastError}` : ""}</span>
+                    <span className="error">
+                      Mất kết nối{c.lastError ? `: ${c.lastError}` : ""}
+                    </span>
                   )}
                 </td>
                 <td className="actions">
@@ -97,7 +106,11 @@ export function ChannelsSettings() {
                       Ngắt kết nối
                     </button>
                   ) : (
-                    <button className="primary" onClick={() => connect(c.platform)} aria-label={`Kết nối lại ${label}`}>
+                    <button
+                      className="primary"
+                      onClick={() => connect(c.platform)}
+                      aria-label={`Kết nối lại ${label}`}
+                    >
                       Kết nối lại
                     </button>
                   )}

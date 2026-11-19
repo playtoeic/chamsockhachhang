@@ -1,5 +1,11 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
-import type { ConnectResult, Credentials, InboundMessage, SendErrorCode, SendResult } from "./types";
+import type {
+  ConnectResult,
+  Credentials,
+  InboundMessage,
+  SendErrorCode,
+  SendResult,
+} from "./types";
 
 /**
  * Phần dùng chung cho Facebook Messenger và Instagram Messaging (nền tảng nhắn tin của Meta).
@@ -48,7 +54,10 @@ type MetaMessaging = {
 
 /** Đọc thân webhook của Meta; chỉ lấy sự kiện tin nhắn (kể cả echo), bỏ đã xem/đã nhận/... */
 export function parseMetaWebhook(rawBody: string, object: "page" | "instagram"): InboundMessage[] {
-  const body = JSON.parse(rawBody) as { object?: string; entry?: { id?: string; messaging?: MetaMessaging[] }[] };
+  const body = JSON.parse(rawBody) as {
+    object?: string;
+    entry?: { id?: string; messaging?: MetaMessaging[] }[];
+  };
   if (body.object !== object) return [];
   const out: InboundMessage[] = [];
   for (const entry of body.entry ?? []) {
@@ -74,7 +83,12 @@ export function parseMetaWebhook(rawBody: string, object: "page" | "instagram"):
         if (a.type === "image" && a.payload?.url) {
           out.push({ ...base, externalMessageId, kind: "image", mediaRef: a.payload.url });
         } else {
-          out.push({ ...base, externalMessageId, kind: "unsupported", unsupportedType: a.type ?? "attachment" });
+          out.push({
+            ...base,
+            externalMessageId,
+            kind: "unsupported",
+            unsupportedType: a.type ?? "attachment",
+          });
         }
       });
     }
@@ -94,7 +108,12 @@ export class MetaApiError extends Error {
 
 export async function graph<T>(
   path: string,
-  opts: { method?: "GET" | "POST"; token?: string; query?: Record<string, string>; body?: unknown } = {},
+  opts: {
+    method?: "GET" | "POST";
+    token?: string;
+    query?: Record<string, string>;
+    body?: unknown;
+  } = {},
 ): Promise<T> {
   const url = new URL(`${GRAPH()}${path}`);
   for (const [k, v] of Object.entries(opts.query ?? {})) url.searchParams.set(k, v);
@@ -105,7 +124,8 @@ export async function graph<T>(
     body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
   });
   const data = (await res.json().catch(() => ({}))) as { error?: GraphError } & T;
-  if (!res.ok || data.error) throw new MetaApiError(data.error ?? { message: `HTTP ${res.status}` });
+  if (!res.ok || data.error)
+    throw new MetaApiError(data.error ?? { message: `HTTP ${res.status}` });
   return data;
 }
 
@@ -133,7 +153,8 @@ export async function metaSendText(
   const hours = lastInboundAt ? (now.getTime() - lastInboundAt.getTime()) / 3600_000 : Infinity;
   let envelope: Record<string, unknown>;
   if (hours <= 24) envelope = { messaging_type: "RESPONSE" };
-  else if (hours <= 168 && humanAgentEnabled()) envelope = { messaging_type: "MESSAGE_TAG", tag: "HUMAN_AGENT" };
+  else if (hours <= 168 && humanAgentEnabled())
+    envelope = { messaging_type: "MESSAGE_TAG", tag: "HUMAN_AGENT" };
   else return { ok: false, error: "window_expired" };
 
   try {
@@ -144,7 +165,8 @@ export async function metaSendText(
     });
     return { ok: true, externalMessageId: res.message_id };
   } catch (e) {
-    if (e instanceof MetaApiError) return { ok: false, error: mapMetaError(e.error), detail: e.message };
+    if (e instanceof MetaApiError)
+      return { ok: false, error: mapMetaError(e.error), detail: e.message };
     return { ok: false, error: "unknown", detail: (e as Error).message };
   }
 }
@@ -191,7 +213,10 @@ type PageAccount = {
 };
 
 /** Đổi mã cấp quyền lấy token dài hạn và danh sách Trang mà chủ quản lý. */
-export async function metaPagesFromCode(params: URLSearchParams, redirectUri: string): Promise<PageAccount[]> {
+export async function metaPagesFromCode(
+  params: URLSearchParams,
+  redirectUri: string,
+): Promise<PageAccount[]> {
   const code = params.get("code");
   if (!code) throw new Error(params.get("error_description") ?? "Chủ trung tâm chưa cấp quyền");
   const short = await graph<{ access_token: string }>("/oauth/access_token", {

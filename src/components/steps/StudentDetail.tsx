@@ -23,7 +23,11 @@ export function StudentDetail({
   onDeleted?: () => void;
 }) {
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ name: student.name, source: student.source ?? "", note: student.note ?? "" });
+  const [form, setForm] = useState({
+    name: student.name,
+    source: student.source ?? "",
+    note: student.note ?? "",
+  });
   const [error, setError] = useState<string | null>(null);
 
   const run = async (fn: () => Promise<unknown>) => {
@@ -76,13 +80,19 @@ export function StudentDetail({
         {student.steps.map((s) => (
           <li key={s.step}>
             <label className="check">
-              <input type="checkbox" checked={isDone(s)} onChange={(e) => void tick(s.step, e.target.checked)} />
+              <input
+                type="checkbox"
+                checked={isDone(s)}
+                onChange={(e) => void tick(s.step, e.target.checked)}
+              />
               {s.label}
             </label>
             {isDone(s) && s.done && (
               <span className="muted step-by">
                 {s.doneBy ? (s.doneBy.name ?? s.doneBy.email) : "Tự động"}
-                {s.doneAt ? ` · ${new Date(s.doneAt).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}` : ""}
+                {s.doneAt
+                  ? ` · ${new Date(s.doneAt).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}`
+                  : ""}
               </span>
             )}
           </li>
@@ -101,7 +111,9 @@ export function StudentDetail({
       </label>
 
       <div className="muted small">
-        {student.trial ? `Học thử: ${student.trial.date} · ${SLOT_LABEL[student.trial.slot]}` : "Chưa xếp học thử"}
+        {student.trial
+          ? `Học thử: ${student.trial.date} · ${SLOT_LABEL[student.trial.slot]}`
+          : "Chưa xếp học thử"}
         <br />
         {student.classSlots.length
           ? `Lịch học: ${student.classSlots.map((c) => `${DAY_LABEL[c.weekday]} ${SLOT_LABEL[c.slot]}`).join(", ")}`
@@ -127,15 +139,26 @@ export function StudentDetail({
         >
           <label className="field">
             Tên
-            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+            <input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              required
+            />
           </label>
           <label className="field">
             Nguồn
-            <input value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} />
+            <input
+              value={form.source}
+              onChange={(e) => setForm({ ...form, source: e.target.value })}
+            />
           </label>
           <label className="field">
             Ghi chú
-            <textarea rows={3} value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
+            <textarea
+              rows={3}
+              value={form.note}
+              onChange={(e) => setForm({ ...form, note: e.target.value })}
+            />
           </label>
           <div className="row">
             <button className="primary" type="submit">
@@ -153,7 +176,11 @@ export function StudentDetail({
             <button
               type="button"
               onClick={() => {
-                setForm({ name: student.name, source: student.source ?? "", note: student.note ?? "" });
+                setForm({
+                  name: student.name,
+                  source: student.source ?? "",
+                  note: student.note ?? "",
+                });
                 setEditing(true);
               }}
             >
@@ -163,7 +190,10 @@ export function StudentDetail({
               type="button"
               className="danger"
               onClick={() => {
-                if (!confirm(`Xoá hồ sơ ${student.name}? Lịch và tiến độ của học sinh cũng bị xoá.`)) return;
+                if (
+                  !confirm(`Xoá hồ sơ ${student.name}? Lịch và tiến độ của học sinh cũng bị xoá.`)
+                )
+                  return;
                 void run(async () => {
                   await api(`/api/students/${student.id}`, { method: "DELETE" });
                   onDeleted?.();

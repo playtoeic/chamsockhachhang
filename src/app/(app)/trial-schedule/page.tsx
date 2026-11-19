@@ -1,3 +1,5 @@
+import { TrialSchedule } from "@/components/schedule/TrialSchedule";
+
 export default function Page() {
-  return <h1>Lịch: học thử</h1>;
+  return <TrialSchedule />;
 }

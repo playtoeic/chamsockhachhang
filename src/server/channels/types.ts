@@ -18,11 +18,11 @@ export type InboundMessage = {
   sentAt: Date;
 };
 
-export type SendErrorCode = "window_expired" | "disconnected" | "rate_limited" | "rejected" | "unknown";
+export type SendErrorCode =
+  "window_expired" | "disconnected" | "rate_limited" | "rejected" | "unknown";
 
 export type SendResult =
-  | { ok: true; externalMessageId: string }
-  | { ok: false; error: SendErrorCode; detail?: string };
+  { ok: true; externalMessageId: string } | { ok: false; error: SendErrorCode; detail?: string };
 
 export const SEND_ERROR_MESSAGES: Record<SendErrorCode, string> = {
   window_expired: "Đã quá thời hạn trả lời trên kênh này",
@@ -59,7 +59,10 @@ export interface ChannelAdapter {
     now: Date,
   ): Promise<SendResult>;
   fetchMedia(credentials: Credentials, ref: string): Promise<{ data: Buffer; contentType: string }>;
-  fetchProfile(credentials: Credentials, externalThreadId: string): Promise<{ name?: string; avatarRef?: string }>;
+  fetchProfile(
+    credentials: Credentials,
+    externalThreadId: string,
+  ): Promise<{ name?: string; avatarRef?: string }>;
   /**
    * Làm mới thông tin truy cập nếu sắp hết hạn (ví dụ access token Zalo ~25 giờ).
    * Trả null nếu chưa cần làm mới. Nơi gọi lưu lại kết quả.

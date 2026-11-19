@@ -118,7 +118,8 @@ export async function setAssignee(actor: CurrentUser, id: string, userId: string
   const conv = await prisma.conversation.findUnique({ where: { id } });
   if (!conv) throw notFound("Cuộc trò chuyện");
   if (actor.role !== "owner") {
-    const claimingSelf = userId === actor.id && (conv.assigneeUserId === null || conv.assigneeUserId === actor.id);
+    const claimingSelf =
+      userId === actor.id && (conv.assigneeUserId === null || conv.assigneeUserId === actor.id);
     const releasingOwn = userId === null && conv.assigneeUserId === actor.id;
     if (!claimingSelf && !releasingOwn) throw forbidden();
   }

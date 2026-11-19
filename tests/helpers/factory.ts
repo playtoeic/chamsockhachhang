@@ -2,7 +2,10 @@ import type { Platform } from "@prisma/client";
 import { prisma } from "@/server/db";
 import { encrypt } from "@/server/crypto";
 
-export async function createConnection(platform: Platform = "simulator", externalAccountId = "sim-account") {
+export async function createConnection(
+  platform: Platform = "simulator",
+  externalAccountId = "sim-account",
+) {
   return prisma.channelConnection.create({
     data: {
       platform,
@@ -41,7 +44,13 @@ export async function createConversation(
 }
 
 export async function createStudent(
-  data: Partial<{ name: string; source: string; autoCreated: boolean; status: "considering" | "trialed" | "enrolled" | "dropped"; lastActivityAt: Date }> = {},
+  data: Partial<{
+    name: string;
+    source: string;
+    autoCreated: boolean;
+    status: "considering" | "trialed" | "enrolled" | "dropped";
+    lastActivityAt: Date;
+  }> = {},
 ) {
   return prisma.student.create({
     data: {

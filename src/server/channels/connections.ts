@@ -38,12 +38,20 @@ export function beginConnect(platform: string): { redirectUrl: string; state: st
  * Hoàn tất kết nối. Kết nối lại cùng tài khoản (cùng platform, externalAccountId) cập nhật bản
  * ghi cũ để các cuộc trò chuyện cũ tiếp tục nhận tin (data-model.md, ChannelConnection).
  */
-export async function completeConnect(platform: string, params: URLSearchParams, expectedState: string | null) {
+export async function completeConnect(
+  platform: string,
+  params: URLSearchParams,
+  expectedState: string | null,
+) {
   const adapter = getAdapter(platform);
   if (!adapter) throw notFound("Kênh");
   const state = params.get("state");
   if (!state || !expectedState || state !== expectedState || !state.startsWith(`${platform}.`)) {
-    throw new ApiError("invalid_state", 400, "Yêu cầu kết nối không hợp lệ hoặc đã hết hạn, vui lòng thử lại");
+    throw new ApiError(
+      "invalid_state",
+      400,
+      "Yêu cầu kết nối không hợp lệ hoặc đã hết hạn, vui lòng thử lại",
+    );
   }
   const result = await adapter.completeConnect(params, callbackUrl(platform));
   const data = {
@@ -55,7 +63,10 @@ export async function completeConnect(platform: string, params: URLSearchParams,
   };
   const conn = await prisma.channelConnection.upsert({
     where: {
-      platform_externalAccountId: { platform: adapter.platform, externalAccountId: result.externalAccountId },
+      platform_externalAccountId: {
+        platform: adapter.platform,
+        externalAccountId: result.externalAccountId,
+      },
     },
     create: { platform: adapter.platform, externalAccountId: result.externalAccountId, ...data },
     update: data,

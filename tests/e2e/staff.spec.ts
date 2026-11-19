@@ -15,7 +15,9 @@ test("chủ thêm nhân viên; nhân viên dùng 4 mục nhưng không vào đư
   await ownerPage.goto("/settings/staff");
   await ownerPage.getByLabel("Địa chỉ Gmail của nhân viên").fill(STAFF.email);
   await ownerPage.getByRole("button", { name: "Thêm nhân viên" }).click();
-  await expect(ownerPage.getByRole("table", { name: "Danh sách người dùng" })).toContainText(STAFF.email);
+  await expect(ownerPage.getByRole("table", { name: "Danh sách người dùng" })).toContainText(
+    STAFF.email,
+  );
 
   // Thêm trùng: báo lỗi.
   await ownerPage.getByLabel("Địa chỉ Gmail của nhân viên").fill(STAFF.email);

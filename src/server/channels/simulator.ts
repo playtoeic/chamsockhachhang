@@ -147,7 +147,8 @@ export const simulator: ChannelAdapter = {
     const messageId = `sim-out-${randomUUID()}`;
     simulatorState.outbox.push({ threadId, text, messageId, at: new Date() });
     if (simulatorState.echoMode === "before") await deliverEcho(threadId, messageId, text);
-    if (simulatorState.echoMode === "after") setTimeout(() => void deliverEcho(threadId, messageId, text), 0);
+    if (simulatorState.echoMode === "after")
+      setTimeout(() => void deliverEcho(threadId, messageId, text), 0);
     return { ok: true, externalMessageId: messageId };
   },
 

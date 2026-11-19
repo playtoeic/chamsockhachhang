@@ -34,10 +34,16 @@ const Body = z.discriminatedUnion("action", [
     kind: z.enum(["text", "image", "video", "sticker"]).default("text"),
     avatar: z.boolean().default(true),
   }),
-  z.object({ action: z.literal("nativeReply"), customerName: z.string().min(1), text: z.string().min(1) }),
+  z.object({
+    action: z.literal("nativeReply"),
+    customerName: z.string().min(1),
+    text: z.string().min(1),
+  }),
   z.object({
     action: z.literal("settings"),
-    rejectWith: z.enum(["window_expired", "disconnected", "rate_limited", "rejected", "unknown"]).nullable(),
+    rejectWith: z
+      .enum(["window_expired", "disconnected", "rate_limited", "rejected", "unknown"])
+      .nullable(),
   }),
 ]);
 

@@ -25,7 +25,11 @@ function schedule(messageId: string) {
 }
 
 /** Tạo tin trả lời ở trạng thái 'sending' và gửi trong nền; kết quả đến qua sự kiện (contracts/api.md). */
-export async function sendReply(conversationId: string, userId: string, body: string): Promise<Message> {
+export async function sendReply(
+  conversationId: string,
+  userId: string,
+  body: string,
+): Promise<Message> {
   const text = body.trim();
   if (!text) throw validation("Nội dung trả lời không được trống");
   const conv = await prisma.conversation.findUnique({ where: { id: conversationId } });
@@ -54,7 +58,8 @@ export async function sendReply(conversationId: string, userId: string, body: st
 export async function retryMessage(messageId: string): Promise<Message> {
   const msg = await prisma.message.findUnique({ where: { id: messageId } });
   if (!msg) throw notFound("Tin nhắn");
-  if (msg.status !== "failed") throw new ApiError("validation", 400, "Chỉ gửi lại được tin đã gửi thất bại");
+  if (msg.status !== "failed")
+    throw new ApiError("validation", 400, "Chỉ gửi lại được tin đã gửi thất bại");
   const updated = await prisma.message.update({
     where: { id: messageId },
     data: { status: "sending", failureReason: null },
@@ -96,7 +101,11 @@ async function deliver(messageId: string): Promise<void> {
       }
     }
     if (!credentials) {
-      result = { ok: false, error: "disconnected", detail: "Không làm mới được quyền truy cập, cần kết nối lại" };
+      result = {
+        ok: false,
+        error: "disconnected",
+        detail: "Không làm mới được quyền truy cập, cần kết nối lại",
+      };
     } else {
       try {
         result = await adapter.sendText(
@@ -117,7 +126,12 @@ async function deliver(messageId: string): Promise<void> {
     await prisma.$transaction(async (tx) => {
       // Echo của chính tin này có thể đã tới và được lưu như tin "gửi từ ứng dụng gốc": gộp lại.
       await tx.message.deleteMany({
-        where: { conversationId: conv.id, externalMessageId, sentByUserId: null, id: { not: msg.id } },
+        where: {
+          conversationId: conv.id,
+          externalMessageId,
+          sentByUserId: null,
+          id: { not: msg.id },
+        },
       });
       await tx.message.update({
         where: { id: msg.id },
@@ -132,7 +146,10 @@ async function deliver(messageId: string): Promise<void> {
     if (result.error === "disconnected" && conn.status === "connected") {
       await prisma.channelConnection.update({
         where: { id: conn.id },
-        data: { status: "disconnected", lastError: result.detail ?? SEND_ERROR_MESSAGES.disconnected },
+        data: {
+          status: "disconnected",
+          lastError: result.detail ?? SEND_ERROR_MESSAGES.disconnected,
+        },
       });
       publish("channel.updated", { channelId: conn.id });
     }

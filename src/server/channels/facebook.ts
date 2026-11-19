@@ -20,14 +20,22 @@ export const facebook: ChannelAdapter = {
   replyWindowHours: metaReplyWindowHours,
 
   beginConnect: (redirectUri, state) =>
-    metaLoginUrl(redirectUri, state, ["pages_show_list", "pages_manage_metadata", "pages_messaging"]),
+    metaLoginUrl(redirectUri, state, [
+      "pages_show_list",
+      "pages_manage_metadata",
+      "pages_messaging",
+    ]),
 
   async completeConnect(params, redirectUri) {
     const pages = await metaPagesFromCode(params, redirectUri);
     const page = pages[0];
     if (!page) throw new Error("Tài khoản không quản lý Trang Facebook nào");
     await subscribePage(page);
-    return { externalAccountId: page.id, displayName: page.name, credentials: pageCredentials(page) };
+    return {
+      externalAccountId: page.id,
+      displayName: page.name,
+      credentials: pageCredentials(page),
+    };
   },
 
   verifyChallenge: metaChallenge,

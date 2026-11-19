@@ -21,7 +21,10 @@ if (!g.__autoCreateRegistered) {
         lastActivityAt: conversation.lastMessageAt,
       },
     });
-    await prisma.conversation.update({ where: { id: conversation.id }, data: { studentId: student.id } });
+    await prisma.conversation.update({
+      where: { id: conversation.id },
+      data: { studentId: student.id },
+    });
     publish("student.updated", { studentId: student.id });
   });
 }

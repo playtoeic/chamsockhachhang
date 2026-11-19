@@ -14,11 +14,16 @@ const MAX_TEXT = 2000;
 const env = (k: string) => process.env[k] ?? "";
 const windowHours = () => Number(process.env.ZALO_REPLY_WINDOW_HOURS ?? 48);
 
-const b64url = (b: Buffer) => b.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const b64url = (b: Buffer) =>
+  b.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
 /** PKCE: code_verifier suy ra từ state bằng khoá bí mật, nên không phải lưu riêng. */
 function codeVerifier(state: string): string {
-  return b64url(createHmac("sha256", env("AUTH_SECRET") || "dev").update(`zalo:${state}`).digest());
+  return b64url(
+    createHmac("sha256", env("AUTH_SECRET") || "dev")
+      .update(`zalo:${state}`)
+      .digest(),
+  );
 }
 
 type ZaloEvent = {
@@ -42,7 +47,11 @@ function mapZaloError(code: number): SendErrorCode {
   return "unknown";
 }
 
-async function zaloGet<T>(path: string, token: string, query: Record<string, string> = {}): Promise<T> {
+async function zaloGet<T>(
+  path: string,
+  token: string,
+  query: Record<string, string> = {},
+): Promise<T> {
   const url = new URL(`${OPENAPI}${path}`);
   for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
   const res = await fetch(url.toString(), { headers: { access_token: token } });
@@ -54,7 +63,10 @@ async function zaloGet<T>(path: string, token: string, query: Record<string, str
 async function tokenRequest(form: Record<string, string>, now = new Date()): Promise<Credentials> {
   const res = await fetch(`${OAUTH}/access_token`, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded", secret_key: env("ZALO_APP_SECRET") },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      secret_key: env("ZALO_APP_SECRET"),
+    },
     body: new URLSearchParams({ app_id: env("ZALO_APP_ID"), ...form }).toString(),
   });
   const data = (await res.json()) as {
@@ -64,7 +76,8 @@ async function tokenRequest(form: Record<string, string>, now = new Date()): Pro
     error?: number;
     error_name?: string;
   };
-  if (!data.access_token) throw new Error(`Zalo không cấp token: ${data.error_name ?? data.error ?? res.status}`);
+  if (!data.access_token)
+    throw new Error(`Zalo không cấp token: ${data.error_name ?? data.error ?? res.status}`);
   return {
     accessToken: data.access_token,
     refreshToken: data.refresh_token ?? form.refresh_token ?? "",
@@ -81,7 +94,10 @@ export const zalo: ChannelAdapter = {
     const u = new URL(`${OAUTH}/permission`);
     u.searchParams.set("app_id", env("ZALO_APP_ID"));
     u.searchParams.set("redirect_uri", redirectUri);
-    u.searchParams.set("code_challenge", b64url(createHash("sha256").update(codeVerifier(state)).digest()));
+    u.searchParams.set(
+      "code_challenge",
+      b64url(createHash("sha256").update(codeVerifier(state)).digest()),
+    );
     u.searchParams.set("state", state);
     return u.toString();
   },
@@ -95,7 +111,10 @@ export const zalo: ChannelAdapter = {
       grant_type: "authorization_code",
       code_verifier: codeVerifier(state),
     });
-    const oa = await zaloGet<{ data: { oa_id: string; name: string } }>("/v2.0/oa/getoa", credentials.accessToken);
+    const oa = await zaloGet<{ data: { oa_id: string; name: string } }>(
+      "/v2.0/oa/getoa",
+      credentials.accessToken,
+    );
     return { externalAccountId: String(oa.data.oa_id), displayName: oa.data.name, credentials };
   },
 
@@ -112,7 +131,11 @@ export const zalo: ChannelAdapter = {
     } catch {
       return false;
     }
-    const want = "mac=" + createHash("sha256").update(`${env("ZALO_APP_ID")}${rawBody}${ts}${secret}`).digest("hex");
+    const want =
+      "mac=" +
+      createHash("sha256")
+        .update(`${env("ZALO_APP_ID")}${rawBody}${ts}${secret}`)
+        .digest("hex");
     return got.length === want.length && timingSafeEqual(Buffer.from(got), Buffer.from(want));
   },
 
@@ -138,12 +161,14 @@ export const zalo: ChannelAdapter = {
     if (kind === "text") out.push({ ...base, kind: "text", body: m.text ?? "" });
     else if (kind === "image" && m.attachments?.[0]?.payload?.url)
       out.push({ ...base, kind: "image", mediaRef: m.attachments[0].payload.url });
-    else out.push({ ...base, kind: "unsupported", unsupportedType: m.attachments?.[0]?.type ?? kind });
+    else
+      out.push({ ...base, kind: "unsupported", unsupportedType: m.attachments?.[0]?.type ?? kind });
     return out;
   },
 
   async sendText(credentials, userId, text, lastInboundAt, now) {
-    if (text.length > MAX_TEXT) return { ok: false, error: "rejected", detail: "Tin Zalo tối đa 2000 ký tự" };
+    if (text.length > MAX_TEXT)
+      return { ok: false, error: "rejected", detail: "Tin Zalo tối đa 2000 ký tự" };
     if (!lastInboundAt || now.getTime() - lastInboundAt.getTime() > windowHours() * 3600_000) {
       return { ok: false, error: "window_expired" };
     }
@@ -153,8 +178,13 @@ export const zalo: ChannelAdapter = {
         headers: { "Content-Type": "application/json", access_token: credentials.accessToken },
         body: JSON.stringify({ recipient: { user_id: userId }, message: { text } }),
       });
-      const data = (await res.json()) as { error?: number; message?: string; data?: { message_id?: string } };
-      if (data.error === 0 && data.data?.message_id) return { ok: true, externalMessageId: data.data.message_id };
+      const data = (await res.json()) as {
+        error?: number;
+        message?: string;
+        data?: { message_id?: string };
+      };
+      if (data.error === 0 && data.data?.message_id)
+        return { ok: true, externalMessageId: data.data.message_id };
       return { ok: false, error: mapZaloError(data.error ?? 0), detail: data.message };
     } catch (e) {
       return { ok: false, error: "unknown", detail: (e as Error).message };
@@ -178,6 +208,9 @@ export const zalo: ChannelAdapter = {
   async refreshCredentials(credentials, now) {
     const expires = new Date(credentials.expiresAt ?? 0).getTime();
     if (expires - now.getTime() > 5 * 60_000) return null;
-    return tokenRequest({ refresh_token: credentials.refreshToken, grant_type: "refresh_token" }, now);
+    return tokenRequest(
+      { refresh_token: credentials.refreshToken, grant_type: "refresh_token" },
+      now,
+    );
   },
 };

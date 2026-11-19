@@ -17,7 +17,13 @@ function senderLabel(m: MessageItem): string | null {
   return m.sentBy?.name ?? m.sentBy?.email ?? null;
 }
 
-export function MessageThread({ messages, onRetry }: { messages: MessageItem[]; onRetry: (id: string) => void }) {
+export function MessageThread({
+  messages,
+  onRetry,
+}: {
+  messages: MessageItem[];
+  onRetry: (id: string) => void;
+}) {
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => {
     // Chrome mới trả Promise từ scrollIntoView: không được trả nó ra khỏi effect.
@@ -36,14 +42,21 @@ export function MessageThread({ messages, onRetry }: { messages: MessageItem[]; 
             )}
             {m.kind === "unsupported" && (
               <em className="muted">
-                Khách gửi {TYPE_NAMES[m.unsupportedType ?? ""] ?? m.unsupportedType ?? "nội dung"} — mở ứng dụng gốc để
-                xem.
+                Khách gửi {TYPE_NAMES[m.unsupportedType ?? ""] ?? m.unsupportedType ?? "nội dung"} —
+                mở ứng dụng gốc để xem.
               </em>
             )}
           </div>
           <div className="msg-meta muted">
             {senderLabel(m) && <span className="sender">{senderLabel(m)}</span>}
-            <span>{new Date(m.createdAt).toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })}</span>
+            <span>
+              {new Date(m.createdAt).toLocaleString("vi-VN", {
+                hour: "2-digit",
+                minute: "2-digit",
+                day: "2-digit",
+                month: "2-digit",
+              })}
+            </span>
             {m.status === "sending" && <span>Đang gửi…</span>}
           </div>
           {m.status === "failed" && (
