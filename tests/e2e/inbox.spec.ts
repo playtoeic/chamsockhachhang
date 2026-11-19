@@ -81,7 +81,7 @@ test("hộp thư chung: nhận, trả lời, gửi thất bại, gửi lại, tr
   await page.goto("/inbox");
   await page.getByRole("listitem").filter({ hasText: "Khách A" }).click();
   await page.getByRole("button", { name: "Nhận" }).click();
-  await expect(page.getByRole("region", { name: "Cuộc trò chuyện" }).getByText("Phụ trách: Chủ trung tâm")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Cuộc trò chuyện", exact: true }).getByText("Phụ trách: Chủ trung tâm")).toBeVisible();
   await page.getByLabel("Người phụ trách").selectOption("me");
   await expect(page.getByRole("listitem")).toHaveCount(1);
   await expect(page.getByRole("listitem").first()).toContainText("Khách A");

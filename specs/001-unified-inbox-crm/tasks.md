@@ -124,15 +124,15 @@ thêm bị từ chối; gỡ thì bị đăng xuất trong 5 giây (quickstart.m
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T045 [P] [US2] Integration test trong `tests/integration/users.test.ts`: chủ thêm email (lưu chữ thường); email đang hoạt động trả `409`; thêm lại email đã gỡ thì kích hoạt lại; nhân viên gọi POST/DELETE nhận `403`; gỡ đặt `active = false`, xoá mọi `Session`, bỏ gán các cuộc trò chuyện đang phụ trách, giữ nguyên `sentByUserId` và `doneByUserId`; phiên của người vừa bị gỡ nhận `401` ở yêu cầu kế tiếp; người vừa được thêm qua `canSignIn` được vào; gỡ chủ trả `400`
-- [ ] T046 [P] [US2] E2E test trong `tests/e2e/staff.spec.ts` theo quickstart.md kịch bản 2: chủ thêm nhân viên; nhân viên thấy 4 mục, không thấy Cài đặt, mở thẳng `/settings/staff` và `/settings/channels` bị chặn; chủ gỡ thì trình duyệt nhân viên về `/login` trong 5 giây
+- [X] T045 [P] [US2] Integration test trong `tests/integration/users.test.ts`: chủ thêm email (lưu chữ thường); email đang hoạt động trả `409`; thêm lại email đã gỡ thì kích hoạt lại; nhân viên gọi POST/DELETE nhận `403`; gỡ đặt `active = false`, xoá mọi `Session`, bỏ gán các cuộc trò chuyện đang phụ trách, giữ nguyên `sentByUserId` và `doneByUserId`; phiên của người vừa bị gỡ nhận `401` ở yêu cầu kế tiếp; người vừa được thêm qua `canSignIn` được vào; gỡ chủ trả `400`
+- [X] T046 [P] [US2] E2E test trong `tests/e2e/staff.spec.ts` theo quickstart.md kịch bản 2: chủ thêm nhân viên; nhân viên thấy 4 mục, không thấy Cài đặt, mở thẳng `/settings/staff` và `/settings/channels` bị chặn; chủ gỡ thì trình duyệt nhân viên về `/login` trong 5 giây
 
 ### Implementation for User Story 2
 
-- [ ] T047 [US2] Cài đặt thêm và gỡ nhân viên trong `src/server/auth/users.ts`: tạo hoặc kích hoạt lại `User` với `role = staff`; gỡ trong một giao dịch (đặt `active = false`, xoá `Session`, đặt `assigneeUserId = null`), rồi phát `session.revoked` cho người bị gỡ và `conversation.updated` cho các cuộc trò chuyện bị bỏ gán
-- [ ] T048 [US2] Thêm POST vào `src/app/api/users/route.ts` (body `{ email }`, kiểm tra định dạng email) và tạo DELETE trong `src/app/api/users/[id]/route.ts`, cả hai dùng `requireOwner` (làm T045 đạt)
-- [ ] T049 [US2] Dựng trang Nhân viên trong `src/app/(app)/settings/staff/page.tsx`: danh sách, ô nhập Gmail, nút gỡ có bước xác nhận, thông báo lỗi `409`
-- [ ] T050 [US2] Chặn phía máy chủ cho khu vực chủ trong `src/app/(app)/settings/layout.tsx` (nhân viên bị chuyển về `/inbox`) và xử lý `session.revoked` trong `src/components/SessionWatcher.tsx` (đăng xuất và về `/login`), gắn vào `src/app/(app)/layout.tsx` (làm T046 đạt)
+- [X] T047 [US2] Cài đặt thêm và gỡ nhân viên trong `src/server/auth/users.ts`: tạo hoặc kích hoạt lại `User` với `role = staff`; gỡ trong một giao dịch (đặt `active = false`, xoá `Session`, đặt `assigneeUserId = null`), rồi phát `session.revoked` cho người bị gỡ và `conversation.updated` cho các cuộc trò chuyện bị bỏ gán
+- [X] T048 [US2] Thêm POST vào `src/app/api/users/route.ts` (body `{ email }`, kiểm tra định dạng email) và tạo DELETE trong `src/app/api/users/[id]/route.ts`, cả hai dùng `requireOwner` (làm T045 đạt)
+- [X] T049 [US2] Dựng trang Nhân viên trong `src/app/(app)/settings/staff/page.tsx`: danh sách, ô nhập Gmail, nút gỡ có bước xác nhận, thông báo lỗi `409`
+- [X] T050 [US2] Chặn phía máy chủ cho khu vực chủ trong `src/app/(app)/settings/layout.tsx` (nhân viên bị chuyển về `/inbox`) và xử lý `session.revoked` trong `src/components/SessionWatcher.tsx` (đăng xuất và về `/login`), gắn vào `src/app/(app)/layout.tsx` (làm T046 đạt)
 
 **Checkpoint**: Chủ giao được việc cho nhân viên và thu hồi được quyền ngay
 

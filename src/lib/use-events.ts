@@ -76,17 +76,32 @@ export function connectEvents(
   };
 }
 
-/** Hook React: đăng ký callback sự kiện thời gian thực cho một trang. */
+// Một kết nối SSE dùng chung cho mọi thành phần trên trang (trình duyệt giới hạn số kết nối).
+type Sub = { current: { handlers: EventHandlers; onReconnect?: () => void } };
+const subs = new Set<Sub>();
+let closeShared: (() => void) | null = null;
+
+const dispatch: EventHandlers = Object.fromEntries(
+  ALL_TYPES.map((t) => [t, (data: unknown) => subs.forEach((s) => s.current.handlers[t]?.(data))]),
+);
+
+/** Hook React: đăng ký callback sự kiện thời gian thực cho một thành phần. */
 export function useEvents(handlers: EventHandlers, onReconnect?: () => void): void {
   const ref = useRef({ handlers, onReconnect });
   useEffect(() => {
     ref.current = { handlers, onReconnect };
   });
-  useEffect(
-    () =>
-      connectEvents(() => ref.current.handlers, {
-        onReconnect: () => ref.current.onReconnect?.(),
-      }),
-    [],
-  );
+  useEffect(() => {
+    subs.add(ref);
+    closeShared ??= connectEvents(dispatch, {
+      onReconnect: () => subs.forEach((s) => s.current.onReconnect?.()),
+    });
+    return () => {
+      subs.delete(ref);
+      if (subs.size === 0) {
+        closeShared?.();
+        closeShared = null;
+      }
+    };
+  }, []);
 }

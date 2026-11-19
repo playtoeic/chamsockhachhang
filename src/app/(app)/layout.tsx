@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { ChannelAlert } from "@/components/ChannelAlert";
 import { Nav } from "@/components/Nav";
+import { SessionWatcher } from "@/components/SessionWatcher";
 import { UserProvider } from "@/components/UserContext";
 import { signOut } from "@/server/auth/config";
 import { getCurrentUser } from "@/server/auth/current";
@@ -21,6 +22,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="app">
         <Nav logout={logout} />
         <ChannelAlert />
+        <SessionWatcher />
         <main className="main">{children}</main>
       </div>
     </UserProvider>
