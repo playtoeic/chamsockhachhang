@@ -825,3 +825,29 @@ textarea {
   gap: 1px;
   margin-bottom: 4px;
 }
+
+/* Ô tên trong lưới co theo bề rộng cột; tên dài cắt bằng "…" thay vì tràn sang cột bên cạnh. */
+.board > .grid {
+  width: 100%;
+  min-width: 0;
+}
+
+.cell-items {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.drag-chip {
+  display: block;
+  min-width: 0;
+}
+
+.drag-chip .chip {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+}
+
+.chip-text {
+  overflow: hidden;
+}

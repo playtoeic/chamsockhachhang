@@ -1,3 +1,5 @@
+import { ClassSchedule } from "@/components/schedule/ClassSchedule";
+
 export default function Page() {
-  return <h1>Lịch: xếp lịch học</h1>;
+  return <ClassSchedule />;
 }

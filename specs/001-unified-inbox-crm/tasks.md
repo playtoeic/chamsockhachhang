@@ -217,14 +217,14 @@ nguyên (quickstart.md kịch bản 5).
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T077 [P] [US5] Integration test trong `tests/integration/class-schedule.test.ts`: PUT thêm khung; PUT lặp lại cùng khung không tạo bản ghi thứ hai và không báo lỗi; một học sinh có nhiều khung; DELETE chỉ gỡ đúng một khung; `weekday` ngoài 1–6 hoặc `slot` sai trả `400`; khung đầu tiên tự tick `class_scheduled`; thao tác ở đây không thay đổi `TrialBooking`; GET trả toàn bộ lưới và danh sách chưa xếp gồm mọi học sinh chưa có khung nào, `lastActivityAt` mới nhất trước, lọc được bằng `q`
-- [ ] T078 [P] [US5] E2E test trong `tests/e2e/class-schedule.spec.ts` theo quickstart.md kịch bản 5: kéo vào 3 khung; thả lại vào khung đã có không nhân đôi; gỡ một khung; màu ô tên đúng trạng thái; cột không có ngày tháng
+- [X] T077 [P] [US5] Integration test trong `tests/integration/class-schedule.test.ts`: PUT thêm khung; PUT lặp lại cùng khung không tạo bản ghi thứ hai và không báo lỗi; một học sinh có nhiều khung; DELETE chỉ gỡ đúng một khung; `weekday` ngoài 1–6 hoặc `slot` sai trả `400`; khung đầu tiên tự tick `class_scheduled`; thao tác ở đây không thay đổi `TrialBooking`; GET trả toàn bộ lưới và danh sách chưa xếp gồm mọi học sinh chưa có khung nào, `lastActivityAt` mới nhất trước, lọc được bằng `q`
+- [X] T078 [P] [US5] E2E test trong `tests/e2e/class-schedule.spec.ts` theo quickstart.md kịch bản 5: kéo vào 3 khung; thả lại vào khung đã có không nhân đôi; gỡ một khung; màu ô tên đúng trạng thái; cột không có ngày tháng
 
 ### Implementation for User Story 5
 
-- [ ] T079 [US5] Cài đặt lịch xếp học trong `src/server/schedule/classes.ts`: `addSlot` (upsert, gọi `autoTick('class_scheduled')` khi là khung đầu tiên), `removeSlot`, `getGrid(q)` kèm danh sách chưa xếp theo FR-017; phát `class-schedule.updated` và `student.updated`
-- [ ] T080 [US5] Tạo các route `src/app/api/class-schedule/route.ts` (GET, `q` tuỳ chọn) và `src/app/api/students/[id]/class-slots/[weekday]/[slot]/route.ts` (PUT, DELETE) (làm T077 đạt)
-- [ ] T081 [US5] Dựng mục Lịch: xếp lịch học trong `src/app/(app)/class-schedule/page.tsx` dùng `ScheduleGrid` và `UnscheduledList`: kéo từ danh sách hoặc từ khung khác đều là thêm khung (không chuyển), nút gỡ trên từng ô tên trong khung, `StatusLegend`, cập nhật qua `use-events` (làm T078 đạt)
+- [X] T079 [US5] Cài đặt lịch xếp học trong `src/server/schedule/classes.ts`: `addSlot` (upsert, gọi `autoTick('class_scheduled')` khi là khung đầu tiên), `removeSlot`, `getGrid(q)` kèm danh sách chưa xếp theo FR-017; phát `class-schedule.updated` và `student.updated`
+- [X] T080 [US5] Tạo các route `src/app/api/class-schedule/route.ts` (GET, `q` tuỳ chọn) và `src/app/api/students/[id]/class-slots/[weekday]/[slot]/route.ts` (PUT, DELETE) (làm T077 đạt)
+- [X] T081 [US5] Dựng mục Lịch: xếp lịch học trong `src/app/(app)/class-schedule/page.tsx` dùng `ScheduleGrid` và `UnscheduledList`: kéo từ danh sách hoặc từ khung khác đều là thêm khung (không chuyển), nút gỡ trên từng ô tên trong khung, `StatusLegend`, cập nhật qua `use-events` (làm T078 đạt)
 
 **Checkpoint**: Cả hai lịch hoạt động độc lập với nhau
 
